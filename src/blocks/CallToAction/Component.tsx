@@ -5,10 +5,13 @@ import type { CallToActionBlock as CTABlockProps } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
 
-export const CallToActionBlock: React.FC<CTABlockProps> = ({ links, richText }) => {
-  return (
-    <div className="container">
-      <div className="bg-card rounded border-border border p-4 flex flex-col gap-8 md:flex-row md:justify-between md:items-center">
+export const CallToActionBlock: React.FC<CTABlockProps & { disableInnerContainer?: boolean }> = ({
+  links,
+  richText,
+  disableInnerContainer,
+}) => {
+  const inner = (
+    <div className="bg-card rounded border-border border p-4 flex flex-col gap-8 md:flex-row md:justify-between md:items-center">
         <div className="max-w-[48rem] flex items-center">
           {richText && <RichText className="mb-0" data={richText} enableGutter={false} />}
         </div>
@@ -18,6 +21,7 @@ export const CallToActionBlock: React.FC<CTABlockProps> = ({ links, richText }) 
           })}
         </div>
       </div>
-    </div>
   )
+
+  return disableInnerContainer ? inner : <div className="container">{inner}</div>
 }

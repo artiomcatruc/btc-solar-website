@@ -66,15 +66,18 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   const { hero, layout } = page
 
+  const usesBtcHero = Boolean(layout?.some((b) => b?.blockType === 'btcHero'))
+
   return (
-    <article className="pt-16 pb-24">
+    <article className={usesBtcHero ? 'pb-24' : 'pt-16 pb-24'}>
       <PageClient />
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
       {draft && <LivePreviewListener />}
 
-      <RenderHero {...hero} />
+      {!usesBtcHero && <RenderHero {...hero} />}
+      {/* When the first BTC hero block is responsible for masthead visuals we skip Payload hero to avoid duplication. */}
       <RenderBlocks blocks={layout} />
     </article>
   )
@@ -100,6 +103,7 @@ const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
     collection: 'pages',
     draft,
     limit: 1,
+    depth: 3,
     pagination: false,
     overrideAccess: draft,
     where: {

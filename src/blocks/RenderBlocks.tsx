@@ -3,49 +3,142 @@ import React, { Fragment } from 'react'
 import type { Page } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
+import { BtcBenefitsSplitBlockComponent } from '@/blocks/BtcBenefitsSplit/Component'
+import { BtcContactSectionComponent } from '@/blocks/BtcContactSection/Component'
+import { BtcCtaBannerBlockComponent } from '@/blocks/BtcCtaBanner/Component'
+import { BtcFaqAccordionBlockComponent } from '@/blocks/BtcFaqAccordion/Component'
+import { BtcGalleryGridBlockComponent } from '@/blocks/BtcGalleryGrid/Component'
+import { BtcHeroBlockComponent } from '@/blocks/BtcHero/Component'
+import { BtcProcessStepsBlockComponent } from '@/blocks/BtcProcessSteps/Component'
+import { BtcSectionIntroBlockComponent } from '@/blocks/BtcSectionIntro/Component'
+import { BtcServicesGridBlockComponent } from '@/blocks/BtcServicesGrid/Component'
+import { BtcStatsRowComponent } from '@/blocks/BtcStatsRow/Component'
+import { BtcTestimonialsGridBlockComponent } from '@/blocks/BtcTestimonialsGrid/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
-const blockComponents = {
-  archive: ArchiveBlock,
-  content: ContentBlock,
-  cta: CallToActionBlock,
-  formBlock: FormBlock,
-  mediaBlock: MediaBlock,
-}
+type Layout = Page['layout']
 
-export const RenderBlocks: React.FC<{
-  blocks: Page['layout'][0][]
-}> = (props) => {
-  const { blocks } = props
+export async function RenderBlocks({ blocks }: { blocks: Layout }) {
+  if (!blocks?.length) return null
 
-  const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
+  const rendered: React.ReactNode[] = []
 
-  if (hasBlocks) {
-    return (
-      <Fragment>
-        {blocks.map((block, index) => {
-          const { blockType } = block
+  for (let index = 0; index < blocks.length; index += 1) {
+    const block = blocks[index]
 
-          if (blockType && blockType in blockComponents) {
-            const Block = blockComponents[blockType]
+    if (!block?.blockType) continue
 
-            if (Block) {
-              return (
-                <div className="my-16" key={index}>
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...block} disableInnerContainer />
-                </div>
-              )
-            }
-          }
-          return null
-        })}
-      </Fragment>
-    )
+    const stableKey = `${block.blockType}-${index}-${
+      'id' in block && typeof block.id === 'string' ? block.id : 'row'
+    }`
+
+    const addSection = (node: React.ReactNode) => {
+      if (block.blockType === 'btcHero') {
+        rendered.push(<Fragment key={stableKey}>{node}</Fragment>)
+      } else {
+        rendered.push(
+          <div className="my-16" key={stableKey}>
+            {node}
+          </div>,
+        )
+      }
+    }
+
+    if (block.blockType === 'btcHero') {
+      addSection(<BtcHeroBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcSectionIntro') {
+      addSection(<BtcSectionIntroBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcServicesGrid') {
+      addSection(<BtcServicesGridBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcBenefitsSplit') {
+      addSection(<BtcBenefitsSplitBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcProcessSteps') {
+      addSection(<BtcProcessStepsBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcStatsRow') {
+      addSection(<BtcStatsRowComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcTestimonialsGrid') {
+      addSection(<BtcTestimonialsGridBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcFaqAccordion') {
+      addSection(<BtcFaqAccordionBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcCtaBanner') {
+      addSection(<BtcCtaBannerBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcGalleryGrid') {
+      addSection(<BtcGalleryGridBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcContactSection') {
+      addSection(<BtcContactSectionComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'cta') {
+      addSection(<CallToActionBlock {...block} disableInnerContainer />)
+      continue
+    }
+
+    if (block.blockType === 'content') {
+      addSection(<ContentBlock {...block} disableInnerContainer />)
+      continue
+    }
+
+    if (block.blockType === 'mediaBlock') {
+      addSection(<MediaBlock {...block} disableInnerContainer />)
+      continue
+    }
+
+    if (block.blockType === 'archive') {
+      addSection(
+        <ArchiveBlock
+          {...block}
+          disableInnerContainer
+          id={typeof block.id === 'string' ? block.id : undefined}
+        />,
+      )
+      continue
+    }
+
+    if (block.blockType === 'formBlock') {
+      addSection(
+        <FormBlock
+          {...block}
+          disableInnerContainer
+          id={typeof block.id === 'string' ? block.id : undefined}
+        />,
+      )
+      continue
+    }
   }
 
-  return null
+  return <Fragment>{rendered}</Fragment>
 }

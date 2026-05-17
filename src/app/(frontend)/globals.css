@@ -44,7 +44,7 @@
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 86rem;
   --font-mono: var(--font-geist-mono);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
 }
 
 @layer utilities {
@@ -205,6 +205,84 @@
   --color-error: var(--error);
 }
 
+@theme inline {
+  /* Legacy BTC Solar marketing palette → Tailwind color tokens */
+  --color-graphite-50: #f7f7f7;
+  --color-graphite-100: #e3e3e3;
+  --color-graphite-200: #c8c8c8;
+  --color-graphite-300: #a4a4a4;
+  --color-graphite-400: #818181;
+  --color-graphite-500: #666666;
+  --color-graphite-600: #515151;
+  --color-graphite-700: #434343;
+  --color-graphite-800: #383838;
+  --color-graphite-900: #1a1a1a;
+  --color-graphite-950: #0d0d0d;
+  --color-solar-50: #fffbeb;
+  --color-solar-100: #fef3c7;
+  --color-solar-200: #fde68a;
+  --color-solar-300: #fcd34d;
+  --color-solar-400: #fbbf24;
+  --color-solar-500: #f59e0b;
+  --color-solar-600: #d97706;
+  --color-eco-50: #f0fdf4;
+  --color-eco-100: #dcfce7;
+  --color-eco-200: #bbf7d0;
+  --color-eco-300: #86efac;
+  --color-eco-400: #4ade80;
+  --color-eco-500: #22c55e;
+  --color-eco-600: #16a34a;
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #fbbf24 0%, #22c55e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hover-lift {
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgb(0 0 0 / 0.1);
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+
+  .fade-in-visible,
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .hero-gradient {
+    background: linear-gradient(
+      180deg,
+      rgba(26, 26, 26, 0.75) 0%,
+      rgba(26, 26, 26, 0.45) 50%,
+      rgba(26, 26, 26, 0.85) 100%
+    );
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -216,6 +294,7 @@
 
 html {
   opacity: 0;
+  scroll-behavior: smooth;
 }
 
 html[data-theme='dark'],

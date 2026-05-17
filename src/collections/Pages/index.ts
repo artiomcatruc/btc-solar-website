@@ -3,6 +3,17 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '../../blocks/ArchiveBlock/config'
+import { BtcBenefitsSplit } from '../../blocks/BtcBenefitsSplit/config'
+import { BtcContactSection } from '../../blocks/BtcContactSection/config'
+import { BtcCtaBanner } from '../../blocks/BtcCtaBanner/config'
+import { BtcFaqAccordion } from '../../blocks/BtcFaqAccordion/config'
+import { BtcGalleryGrid } from '../../blocks/BtcGalleryGrid/config'
+import { BtcHero } from '../../blocks/BtcHero/config'
+import { BtcProcessSteps } from '../../blocks/BtcProcessSteps/config'
+import { BtcSectionIntro } from '../../blocks/BtcSectionIntro/config'
+import { BtcServicesGrid } from '../../blocks/BtcServicesGrid/config'
+import { BtcStatsRow } from '../../blocks/BtcStatsRow/config'
+import { BtcTestimonialsGrid } from '../../blocks/BtcTestimonialsGrid/config'
 import { CallToAction } from '../../blocks/CallToAction/config'
 import { Content } from '../../blocks/Content/config'
 import { FormBlock } from '../../blocks/Form/config'
@@ -72,7 +83,24 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock],
+              blocks: [
+                BtcHero,
+                BtcSectionIntro,
+                BtcServicesGrid,
+                BtcBenefitsSplit,
+                BtcProcessSteps,
+                BtcStatsRow,
+                BtcTestimonialsGrid,
+                BtcFaqAccordion,
+                BtcCtaBanner,
+                BtcGalleryGrid,
+                BtcContactSection,
+                CallToAction,
+                Content,
+                MediaBlock,
+                Archive,
+                FormBlock,
+              ],
               required: true,
               admin: {
                 initCollapsed: true,

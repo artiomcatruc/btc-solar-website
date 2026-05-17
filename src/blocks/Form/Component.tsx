@@ -1,22 +1,25 @@
 'use client'
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
 
-import { useRouter } from 'next/navigation'
-import React, { useCallback, useState } from 'react'
-import { useForm, FormProvider } from 'react-hook-form'
+import type { Form as PayloadForm } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import { useRouter } from 'next/navigation'
+import React, { useCallback, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 
-import { fields } from './fields'
 import { getClientSideURL } from '@/utilities/getURL'
+import { cn } from '@/utilities/ui'
+import { fields } from './fields'
 
 export type FormBlockType = {
-  blockName?: string
+  blockName?: string | null
   blockType?: 'formBlock'
-  enableIntro: boolean
-  form: FormType
-  introContent?: DefaultTypedEditorState
+  disableInnerContainer?: boolean
+  enableIntro?: boolean | null
+  form: number | PayloadForm
+  introContent?: DefaultTypedEditorState | null
 }
 
 export const FormBlock: React.FC<
@@ -24,12 +27,20 @@ export const FormBlock: React.FC<
     id?: string
   } & FormBlockType
 > = (props) => {
+  const { disableInnerContainer, enableIntro, form: formRelation, introContent } = props
+
+  if (typeof formRelation === 'number') {
+    return null
+  }
+
+  const formFromProps = formRelation as unknown as FormType
   const {
-    enableIntro,
-    form: formFromProps,
-    form: { id: formID, confirmationMessage, confirmationType, redirect, submitButtonLabel } = {},
-    introContent,
-  } = props
+    id: formID,
+    confirmationMessage,
+    confirmationType,
+    redirect,
+    submitButtonLabel,
+  } = formFromProps
 
   const formMethods = useForm({
     defaultValues: formFromProps.fields,
@@ -114,7 +125,7 @@ export const FormBlock: React.FC<
   )
 
   return (
-    <div className="container lg:max-w-[48rem]">
+    <div className={cn(!disableInnerContainer && 'container lg:max-w-[48rem]')}>
       {enableIntro && introContent && !hasSubmitted && (
         <RichText className="mb-8 lg:mb-12" data={introContent} enableGutter={false} />
       )}

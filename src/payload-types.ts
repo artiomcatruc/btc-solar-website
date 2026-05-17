@@ -71,6 +71,10 @@ export interface Config {
     posts: Post;
     media: Media;
     categories: Category;
+    services: Service;
+    testimonials: Testimonial;
+    faqs: Faq;
+    'gallery-items': GalleryItem;
     users: User;
     redirects: Redirect;
     forms: Form;
@@ -93,6 +97,10 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    faqs: FaqsSelect<false> | FaqsSelect<true>;
+    'gallery-items': GalleryItemsSelect<false> | GalleryItemsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -110,10 +118,14 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    site: Site;
+    'home-stats': HomeStat;
     header: Header;
     footer: Footer;
   };
   globalsSelect: {
+    site: SiteSelect<false> | SiteSelect<true>;
+    'home-stats': HomeStatsSelect<false> | HomeStatsSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
   };
@@ -201,7 +213,24 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (
+    | BtcHeroBlock
+    | BtcSectionIntroBlock
+    | BtcServicesGridBlock
+    | BtcBenefitsSplitBlock
+    | BtcProcessStepsBlock
+    | BtcStatsRowBlock
+    | BtcTestimonialsGridBlock
+    | BtcFaqAccordionBlock
+    | BtcCtaBannerBlock
+    | BtcGalleryGridBlock
+    | BtcContactSectionBlock
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -438,6 +467,315 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcHeroBlock".
+ */
+export interface BtcHeroBlock {
+  /**
+   * Pill above the headline.
+   */
+  badge?: string | null;
+  headline: string;
+  /**
+   * Gradient line (second line).
+   */
+  headlineAccent?: string | null;
+  description?: string | null;
+  background: number | Media;
+  buttons?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcSectionIntroBlock".
+ */
+export interface BtcSectionIntroBlock {
+  /**
+   * Uppercase label in solar accent.
+   */
+  eyebrow?: string | null;
+  heading: string;
+  lead?: string | null;
+  align?: ('center' | 'left') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcSectionIntro';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcServicesGridBlock".
+ */
+export interface BtcServicesGridBlock {
+  /**
+   * Select services in presentation order.
+   */
+  services?: (number | Service)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcServicesGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  summary: string;
+  icon: 'home' | 'building' | 'shield' | 'bolt' | 'cog' | 'chart';
+  /**
+   * Lower sorts first.
+   */
+  sort?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcBenefitsSplitBlock".
+ */
+export interface BtcBenefitsSplitBlock {
+  benefits?:
+    | {
+        tone: 'eco' | 'solar' | 'graphite';
+        title: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  media: number | Media;
+  /**
+   * Floating badge title
+   */
+  cardTitle?: string | null;
+  /**
+   * Badge subtitle line
+   */
+  cardSubtitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcBenefitsSplit';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcProcessStepsBlock".
+ */
+export interface BtcProcessStepsBlock {
+  /**
+   * e.g. HOW IT WORKS
+   */
+  eyebrow?: string | null;
+  title: string;
+  intro?: string | null;
+  steps?:
+    | {
+        title: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcProcessSteps';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcStatsRowBlock".
+ */
+export interface BtcStatsRowBlock {
+  stats?:
+    | {
+        /**
+         * Large number row (500+, 10 MW, …).
+         */
+        value: string;
+        /**
+         * Caption below the number.
+         */
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * If stats array empty, frontend will read globals/home-stats.
+   */
+  preferGlobalHomeStats?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcStatsRow';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcTestimonialsGridBlock".
+ */
+export interface BtcTestimonialsGridBlock {
+  eyebrow?: string | null;
+  title: string;
+  /**
+   * Usually 3 for the legacy homepage layout.
+   */
+  items?: (number | Testimonial)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcTestimonialsGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  quote: string;
+  name: string;
+  /**
+   * e.g. Role, City
+   */
+  subtitle?: string | null;
+  rating?: number | null;
+  /**
+   * Optional — initials fallback shown when empty.
+   */
+  avatar?: (number | null) | Media;
+  sort?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcFaqAccordionBlock".
+ */
+export interface BtcFaqAccordionBlock {
+  eyebrow?: string | null;
+  title: string;
+  /**
+   * Questions appear in CMS order.
+   */
+  entries?: (number | Faq)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcFaqAccordion';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs".
+ */
+export interface Faq {
+  id: number;
+  question: string;
+  answer: string;
+  /**
+   * Filter in the FAQ block admin when building pages; docs with "any" are always eligible.
+   */
+  pageScope: 'any' | 'home' | 'about' | 'gallery' | 'contact';
+  sort?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcCtaBannerBlock".
+ */
+export interface BtcCtaBannerBlock {
+  /**
+   * Dimmed imagery behind text.
+   */
+  background: number | Media;
+  title: string;
+  description?: string | null;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcCtaBanner';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcGalleryGridBlock".
+ */
+export interface BtcGalleryGridBlock {
+  eyebrow?: string | null;
+  title: string;
+  /**
+   * Select gallery items.
+   */
+  items?: (number | GalleryItem)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcGalleryGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery-items".
+ */
+export interface GalleryItem {
+  id: number;
+  image: number | Media;
+  caption: string;
+  category: 'residential' | 'commercial' | 'other';
+  /**
+   * Town or label shown in overlays
+   */
+  location?: string | null;
+  sort?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcContactSectionBlock".
+ */
+export interface BtcContactSectionBlock {
+  eyebrow?: string | null;
+  title: string;
+  lead?: string | null;
+  /**
+   * Form wiring arrives in Phase E; this handles intro + contact metadata only.
+   */
+  showSiteContactDetails?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcContactSection';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -988,6 +1326,22 @@ export interface PayloadLockedDocument {
         value: number | Category;
       } | null)
     | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'faqs';
+        value: number | Faq;
+      } | null)
+    | ({
+        relationTo: 'gallery-items';
+        value: number | GalleryItem;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
       } | null)
@@ -1084,6 +1438,17 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        btcHero?: T | BtcHeroBlockSelect<T>;
+        btcSectionIntro?: T | BtcSectionIntroBlockSelect<T>;
+        btcServicesGrid?: T | BtcServicesGridBlockSelect<T>;
+        btcBenefitsSplit?: T | BtcBenefitsSplitBlockSelect<T>;
+        btcProcessSteps?: T | BtcProcessStepsBlockSelect<T>;
+        btcStatsRow?: T | BtcStatsRowBlockSelect<T>;
+        btcTestimonialsGrid?: T | BtcTestimonialsGridBlockSelect<T>;
+        btcFaqAccordion?: T | BtcFaqAccordionBlockSelect<T>;
+        btcCtaBanner?: T | BtcCtaBannerBlockSelect<T>;
+        btcGalleryGrid?: T | BtcGalleryGridBlockSelect<T>;
+        btcContactSection?: T | BtcContactSectionBlockSelect<T>;
         cta?: T | CallToActionBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
         mediaBlock?: T | MediaBlockSelect<T>;
@@ -1103,6 +1468,177 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcHeroBlock_select".
+ */
+export interface BtcHeroBlockSelect<T extends boolean = true> {
+  badge?: T;
+  headline?: T;
+  headlineAccent?: T;
+  description?: T;
+  background?: T;
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcSectionIntroBlock_select".
+ */
+export interface BtcSectionIntroBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  lead?: T;
+  align?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcServicesGridBlock_select".
+ */
+export interface BtcServicesGridBlockSelect<T extends boolean = true> {
+  services?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcBenefitsSplitBlock_select".
+ */
+export interface BtcBenefitsSplitBlockSelect<T extends boolean = true> {
+  benefits?:
+    | T
+    | {
+        tone?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  media?: T;
+  cardTitle?: T;
+  cardSubtitle?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcProcessStepsBlock_select".
+ */
+export interface BtcProcessStepsBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  intro?: T;
+  steps?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcStatsRowBlock_select".
+ */
+export interface BtcStatsRowBlockSelect<T extends boolean = true> {
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  preferGlobalHomeStats?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcTestimonialsGridBlock_select".
+ */
+export interface BtcTestimonialsGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  items?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcFaqAccordionBlock_select".
+ */
+export interface BtcFaqAccordionBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  entries?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcCtaBannerBlock_select".
+ */
+export interface BtcCtaBannerBlockSelect<T extends boolean = true> {
+  background?: T;
+  title?: T;
+  description?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcGalleryGridBlock_select".
+ */
+export interface BtcGalleryGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  items?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcContactSectionBlock_select".
+ */
+export interface BtcContactSectionBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  title?: T;
+  lead?: T;
+  showSiteContactDetails?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1330,6 +1866,57 @@ export interface CategoriesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  summary?: T;
+  icon?: T;
+  sort?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  quote?: T;
+  name?: T;
+  subtitle?: T;
+  rating?: T;
+  avatar?: T;
+  sort?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs_select".
+ */
+export interface FaqsSelect<T extends boolean = true> {
+  question?: T;
+  answer?: T;
+  pageScope?: T;
+  sort?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery-items_select".
+ */
+export interface GalleryItemsSelect<T extends boolean = true> {
+  image?: T;
+  caption?: T;
+  category?: T;
+  location?: T;
+  sort?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1633,10 +2220,67 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site".
+ */
+export interface Site {
+  id: number;
+  siteName?: string | null;
+  /**
+   * Fallback document title when a page omits SEO title.
+   */
+  defaultTitle?: string | null;
+  defaultDescription?: string | null;
+  ogImage?: (number | null) | Media;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  defaultLocale?: ('en' | 'ro' | 'ru') | null;
+  socialLinks?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-stats".
+ */
+export interface HomeStat {
+  id: number;
+  stats?:
+    | {
+        /**
+         * e.g. 500+, 10 MW
+         */
+        value: string;
+        /**
+         * e.g. Projects Completed
+         */
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
  */
 export interface Header {
   id: number;
+  /**
+   * Optional SVG/PNG logo. Fallback: BTC Solar mark.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Beside logo; if empty, Site siteName is shown.
+   */
+  tagline?: string | null;
   navItems?:
     | {
         link: {
@@ -1657,6 +2301,22 @@ export interface Header {
         id?: string | null;
       }[]
     | null;
+  ctaEnabled?: boolean | null;
+  cta: {
+    type?: ('reference' | 'custom') | null;
+    newTab?: boolean | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    url?: string | null;
+    label: string;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1666,34 +2326,88 @@ export interface Header {
  */
 export interface Footer {
   id: number;
-  navItems?:
+  columns?:
     | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
+        heading: string;
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
+  copyrightText?: string | null;
+  /**
+   * Renders “Contact Info” beside link columns.
+   */
+  showContactFromSite?: boolean | null;
+  showSocialFromSite?: boolean | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site_select".
+ */
+export interface SiteSelect<T extends boolean = true> {
+  siteName?: T;
+  defaultTitle?: T;
+  defaultDescription?: T;
+  ogImage?: T;
+  phone?: T;
+  email?: T;
+  address?: T;
+  defaultLocale?: T;
+  socialLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-stats_select".
+ */
+export interface HomeStatsSelect<T extends boolean = true> {
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  logo?: T;
+  tagline?: T;
   navItems?:
     | T
     | {
@@ -1707,6 +2421,16 @@ export interface HeaderSelect<T extends boolean = true> {
               label?: T;
             };
         id?: T;
+      };
+  ctaEnabled?: T;
+  cta?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1717,20 +2441,29 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  navItems?:
+  columns?:
     | T
     | {
-        link?:
+        heading?: T;
+        links?:
           | T
           | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
             };
         id?: T;
       };
+  copyrightText?: T;
+  showContactFromSite?: T;
+  showSocialFromSite?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
