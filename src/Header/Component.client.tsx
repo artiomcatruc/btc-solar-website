@@ -39,7 +39,10 @@ export const HeaderClient: React.FC<Props> = ({ header, site }) => {
   const hasCta = header?.ctaEnabled !== false && Boolean(headerCta?.label)
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50" {...(theme ? { 'data-theme': theme } : {})}>
+    <header
+      className="sticky inset-x-0 top-[var(--admin-bar-height,0px)] z-50"
+      {...(theme ? { 'data-theme': theme } : {})}
+    >
       <nav className="glass border-b border-graphite-100">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-8">
           <Link className="flex items-center gap-3" href="/" onClick={() => setMobileOpen(false)}>
@@ -70,7 +73,9 @@ export const HeaderClient: React.FC<Props> = ({ header, site }) => {
                 key={`${link?.label}-${i}`}
                 {...link}
                 appearance="inline"
-                className={cn('font-medium text-graphite-600 transition-colors hover:text-solar-500')}
+                className={cn(
+                  'font-medium text-graphite-600 transition-colors hover:text-solar-500',
+                )}
               />
             ))}
           </div>
@@ -92,9 +97,19 @@ export const HeaderClient: React.FC<Props> = ({ header, site }) => {
             <span className="sr-only">{mobileOpen ? 'Close navigation' : 'Open navigation'}</span>
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileOpen ? (
-                <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
+                <path
+                  d="M6 18L18 6M6 6l12 12"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                />
               ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
+                <path
+                  d="M4 6h16M4 12h16M4 18h16"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                />
               )}
             </svg>
           </button>
@@ -104,8 +119,16 @@ export const HeaderClient: React.FC<Props> = ({ header, site }) => {
           <div className="border-t border-graphite-100 bg-white md:hidden">
             <div className="space-y-4 px-4 py-6">
               {navItems.map(({ link }, i) => (
-                <div key={`mobile-${link?.label}-${i}`} onClick={() => setMobileOpen(false)} role="presentation">
-                  <CMSLink {...link} appearance="inline" className="block py-2 font-medium text-graphite-900" />
+                <div
+                  key={`mobile-${link?.label}-${i}`}
+                  onClick={() => setMobileOpen(false)}
+                  role="presentation"
+                >
+                  <CMSLink
+                    {...link}
+                    appearance="inline"
+                    className="block py-2 font-medium text-graphite-900"
+                  />
                 </div>
               ))}
               {hasCta && headerCta ? (

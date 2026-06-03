@@ -116,7 +116,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'ru' | 'ro') | ('en' | 'ru' | 'ro')[];
   globals: {
     site: Site;
     'home-stats': HomeStat;
@@ -129,7 +129,7 @@ export interface Config {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'ru' | 'ro';
   widgets: {
     collections: CollectionsWidget;
   };

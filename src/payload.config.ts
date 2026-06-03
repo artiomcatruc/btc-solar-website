@@ -1,9 +1,10 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
+import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
+import { defaultLexical } from '@/fields/defaultLexical'
 import { Categories } from './collections/Categories'
 import { Faqs } from './collections/Faqs'
 import { GalleryItems } from './collections/GalleryItems'
@@ -13,12 +14,11 @@ import { Posts } from './collections/Posts'
 import { Services } from './collections/Services'
 import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
-import { HomeStats } from './HomeStats/config'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
-import { Site } from './Site/config'
+import { HomeStats } from './HomeStats/config'
 import { plugins } from './plugins'
-import { defaultLexical } from '@/fields/defaultLexical'
+import { Site } from './Site/config'
 import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
@@ -68,17 +68,12 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [
-    Pages,
-    Posts,
-    Media,
-    Categories,
-    Services,
-    Testimonials,
-    Faqs,
-    GalleryItems,
-    Users,
-  ],
+  localization: {
+    locales: ['en', 'ru', 'ro'],
+    defaultLocale: 'en',
+    fallback: true,
+  },
+  collections: [Pages, Posts, Media, Categories, Services, Testimonials, Faqs, GalleryItems, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Site, HomeStats, Header, Footer],
   plugins,
