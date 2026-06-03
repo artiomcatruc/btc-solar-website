@@ -10,9 +10,19 @@ export const Footer: GlobalConfig = {
   },
   fields: [
     {
+      name: 'brandDescription',
+      type: 'textarea',
+      label: 'Brand description',
+      defaultValue:
+        'Premium solar energy solutions for homes and businesses across Moldova. Your trusted partner in renewable energy.',
+      admin: {
+        description: 'Shown under the logo in the first footer column.',
+      },
+    },
+    {
       name: 'columns',
       type: 'array',
-      maxRows: 4,
+      maxRows: 2,
       admin: {
         initCollapsed: true,
         components: {

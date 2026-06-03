@@ -336,7 +336,9 @@ export const seed = async ({
     payload.updateGlobal({
       slug: 'footer',
       data: {
-        copyrightText: '© BTC Solar Energy. Moldova solar installs.',
+        brandDescription:
+          'Premium solar energy solutions for homes and businesses across Moldova. Your trusted partner in renewable energy.',
+        copyrightText: `© ${new Date().getFullYear()} BTC Solar. All rights reserved.`,
         showContactFromSite: true,
         showSocialFromSite: true,
         columns: [
@@ -353,7 +355,7 @@ export const seed = async ({
               {
                 link: {
                   type: 'custom',
-                  label: 'About',
+                  label: 'About Us',
                   url: '/about',
                 },
               },
@@ -382,31 +384,41 @@ export const seed = async ({
               {
                 link: {
                   type: 'reference',
-                  label: 'Get a quote',
+                  label: 'Residential Solar',
                   reference: {
                     relationTo: 'pages',
                     value: contactPage.id,
                   },
                 },
               },
-            ],
-          },
-          {
-            heading: 'Explore',
-            links: [
               {
                 link: {
-                  type: 'custom',
-                  label: 'Admin',
-                  url: '/admin',
+                  type: 'reference',
+                  label: 'Commercial Solar',
+                  reference: {
+                    relationTo: 'pages',
+                    value: contactPage.id,
+                  },
                 },
               },
               {
                 link: {
-                  type: 'custom',
-                  label: 'Payload docs',
-                  newTab: true,
-                  url: 'https://payloadcms.com/',
+                  type: 'reference',
+                  label: 'Energy Consultation',
+                  reference: {
+                    relationTo: 'pages',
+                    value: contactPage.id,
+                  },
+                },
+              },
+              {
+                link: {
+                  type: 'reference',
+                  label: 'Maintenance',
+                  reference: {
+                    relationTo: 'pages',
+                    value: contactPage.id,
+                  },
                 },
               },
             ],

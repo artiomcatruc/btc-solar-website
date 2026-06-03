@@ -2326,6 +2326,10 @@ export interface Header {
  */
 export interface Footer {
   id: number;
+  /**
+   * Shown under the logo in the first footer column.
+   */
+  brandDescription?: string | null;
   columns?:
     | {
         heading: string;
@@ -2441,6 +2445,7 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
+  brandDescription?: T;
   columns?:
     | T
     | {
