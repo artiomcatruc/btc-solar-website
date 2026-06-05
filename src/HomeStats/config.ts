@@ -22,7 +22,7 @@ export const HomeStats: GlobalConfig = {
               name: 'value',
               type: 'text',
               required: true,
-              admin: { width: '50%', description: 'e.g. 500+, 10 MW' },
+              admin: { width: '50%', description: 'e.g. 500+, 10MW, 98% — suffix in solar accent' },
             },
             {
               name: 'label',

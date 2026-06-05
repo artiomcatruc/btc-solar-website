@@ -35,15 +35,19 @@ export async function RenderBlocks({ blocks }: { blocks: Layout }) {
       'id' in block && typeof block.id === 'string' ? block.id : 'row'
     }`
 
+    const previousBlock = index > 0 ? blocks[index - 1] : null
+    const nextBlock = index < blocks.length - 1 ? blocks[index + 1] : null
+    const pairsWithServicesGrid =
+      block.blockType === 'btcSectionIntro' && nextBlock?.blockType === 'btcServicesGrid'
+    const followsSectionIntro =
+      block.blockType === 'btcServicesGrid' && previousBlock?.blockType === 'btcSectionIntro'
+    const skipMargin = block.blockType === 'btcHero' || pairsWithServicesGrid || followsSectionIntro
+
     const addSection = (node: React.ReactNode) => {
-      if (block.blockType === 'btcHero') {
+      if (skipMargin) {
         rendered.push(<Fragment key={stableKey}>{node}</Fragment>)
       } else {
-        rendered.push(
-          <div className="my-16" key={stableKey}>
-            {node}
-          </div>,
-        )
+        rendered.push(<div key={stableKey}>{node}</div>)
       }
     }
 
@@ -53,12 +57,19 @@ export async function RenderBlocks({ blocks }: { blocks: Layout }) {
     }
 
     if (block.blockType === 'btcSectionIntro') {
-      addSection(<BtcSectionIntroBlockComponent {...block} />)
+      addSection(
+        <BtcSectionIntroBlockComponent
+          {...block}
+          continuesToServicesGrid={pairsWithServicesGrid}
+        />,
+      )
       continue
     }
 
     if (block.blockType === 'btcServicesGrid') {
-      addSection(<BtcServicesGridBlockComponent {...block} />)
+      addSection(
+        <BtcServicesGridBlockComponent {...block} followsSectionIntro={followsSectionIntro} />,
+      )
       continue
     }
 

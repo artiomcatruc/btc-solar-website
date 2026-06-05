@@ -20,7 +20,7 @@ export const BtcStatsRow: Block = {
           type: 'text',
           required: true,
           admin: {
-            description: 'Large number row (500+, 10 MW, …).',
+            description: 'Number plus suffix, e.g. 500+, 10MW, 98% — suffix renders in solar accent.',
           },
         },
         {

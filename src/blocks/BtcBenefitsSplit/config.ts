@@ -12,6 +12,18 @@ export const BtcBenefitsSplit: Block = {
   labels: { singular: 'BTC Benefits Split', plural: 'BTC Benefits Splits' },
   fields: [
     {
+      name: 'eyebrow',
+      type: 'text',
+      defaultValue: 'Why Solar?',
+      admin: { description: 'Uppercase label above the heading.' },
+    },
+    {
+      name: 'heading',
+      type: 'text',
+      required: true,
+      defaultValue: 'Benefits of Going Solar',
+    },
+    {
       name: 'benefits',
       type: 'array',
       labels: {

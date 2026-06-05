@@ -558,6 +558,11 @@ export interface Service {
  * via the `definition` "BtcBenefitsSplitBlock".
  */
 export interface BtcBenefitsSplitBlock {
+  /**
+   * Uppercase label above the heading.
+   */
+  eyebrow?: string | null;
+  heading: string;
   benefits?:
     | {
         tone: 'eco' | 'solar' | 'graphite';
@@ -609,7 +614,7 @@ export interface BtcStatsRowBlock {
   stats?:
     | {
         /**
-         * Large number row (500+, 10 MW, …).
+         * Number plus suffix, e.g. 500+, 10MW, 98% — suffix renders in solar accent.
          */
         value: string;
         /**
@@ -1522,6 +1527,8 @@ export interface BtcServicesGridBlockSelect<T extends boolean = true> {
  * via the `definition` "BtcBenefitsSplitBlock_select".
  */
 export interface BtcBenefitsSplitBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
   benefits?:
     | T
     | {
@@ -2254,7 +2261,7 @@ export interface HomeStat {
   stats?:
     | {
         /**
-         * e.g. 500+, 10 MW
+         * e.g. 500+, 10MW, 98% — suffix in solar accent
          */
         value: string;
         /**

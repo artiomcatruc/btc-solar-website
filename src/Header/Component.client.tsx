@@ -59,7 +59,7 @@ export const HeaderClient: React.FC<Props> = ({ header, site }) => {
     'inline-flex items-center gap-2 rounded-full bg-graphite-900 px-6 py-3 font-medium text-white transition-colors hover:bg-graphite-800'
 
   return (
-    <header className="fixed inset-x-0 top-(--admin-bar-height,0px) z-50">
+    <header className="sticky inset-x-0 top-(--admin-bar-height,0px) z-50">
       <nav className="glass border-b border-graphite-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 items-center justify-between">
