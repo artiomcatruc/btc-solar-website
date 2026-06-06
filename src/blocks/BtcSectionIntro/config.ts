@@ -18,6 +18,10 @@ export const BtcSectionIntro: Block = {
     {
       name: 'lead',
       type: 'textarea',
+      admin: {
+        description:
+          'Single paragraph for compact layout. Separate paragraphs with a blank line for the multi-paragraph story layout.',
+      },
     },
     {
       name: 'align',
@@ -26,6 +30,7 @@ export const BtcSectionIntro: Block = {
       options: [
         { label: 'Center', value: 'center' },
         { label: 'Left', value: 'left' },
+        { label: 'Right', value: 'right' },
       ],
     },
   ],

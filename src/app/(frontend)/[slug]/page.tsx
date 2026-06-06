@@ -66,7 +66,9 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   const { hero, layout } = page
 
-  const usesBtcHero = Boolean(layout?.some((b) => b?.blockType === 'btcHero'))
+  const usesBtcHero = Boolean(
+    layout?.some((b) => b?.blockType === 'btcHero' || b?.blockType === 'btcAboutHero'),
+  )
 
   return (
     <article>

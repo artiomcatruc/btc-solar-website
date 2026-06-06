@@ -3,6 +3,7 @@ import React, { Fragment } from 'react'
 import type { Page } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
+import { BtcAboutHeroBlockComponent } from '@/blocks/BtcAboutHero/Component'
 import { BtcBenefitsSplitBlockComponent } from '@/blocks/BtcBenefitsSplit/Component'
 import { BtcContactSectionComponent } from '@/blocks/BtcContactSection/Component'
 import { BtcCtaBannerBlockComponent } from '@/blocks/BtcCtaBanner/Component'
@@ -53,6 +54,11 @@ export async function RenderBlocks({ blocks }: { blocks: Layout }) {
 
     if (block.blockType === 'btcHero') {
       addSection(<BtcHeroBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcAboutHero') {
+      addSection(<BtcAboutHeroBlockComponent {...block} />)
       continue
     }
 

@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '../../blocks/ArchiveBlock/config'
+import { BtcAboutHero } from '../../blocks/BtcAboutHero/config'
 import { BtcBenefitsSplit } from '../../blocks/BtcBenefitsSplit/config'
 import { BtcContactSection } from '../../blocks/BtcContactSection/config'
 import { BtcCtaBanner } from '../../blocks/BtcCtaBanner/config'
@@ -85,6 +86,7 @@ export const Pages: CollectionConfig<'pages'> = {
               type: 'blocks',
               blocks: [
                 BtcHero,
+                BtcAboutHero,
                 BtcSectionIntro,
                 BtcServicesGrid,
                 BtcBenefitsSplit,

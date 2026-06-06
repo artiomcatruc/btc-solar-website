@@ -215,6 +215,7 @@ export interface Page {
   };
   layout: (
     | BtcHeroBlock
+    | BtcAboutHeroBlock
     | BtcSectionIntroBlock
     | BtcServicesGridBlock
     | BtcBenefitsSplitBlock
@@ -510,6 +511,42 @@ export interface BtcHeroBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcAboutHeroBlock".
+ */
+export interface BtcAboutHeroBlock {
+  /**
+   * Uppercase label above the headline.
+   */
+  eyebrow?: string | null;
+  headline: string;
+  /**
+   * Renders inline with gradient-text.
+   */
+  headlineAccent?: string | null;
+  lead?: string | null;
+  highlights?:
+    | {
+        tone: 'solar' | 'eco' | 'graphite';
+        value: string;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  media: number | Media;
+  /**
+   * Floating badge title on the image.
+   */
+  cardTitle?: string | null;
+  /**
+   * Badge subtitle line.
+   */
+  cardSubtitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcAboutHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "BtcSectionIntroBlock".
  */
 export interface BtcSectionIntroBlock {
@@ -518,8 +555,11 @@ export interface BtcSectionIntroBlock {
    */
   eyebrow?: string | null;
   heading: string;
+  /**
+   * Single paragraph for compact layout. Separate paragraphs with a blank line for the multi-paragraph story layout.
+   */
   lead?: string | null;
-  align?: ('center' | 'left') | null;
+  align?: ('center' | 'left' | 'right') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'btcSectionIntro';
@@ -1444,6 +1484,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         btcHero?: T | BtcHeroBlockSelect<T>;
+        btcAboutHero?: T | BtcAboutHeroBlockSelect<T>;
         btcSectionIntro?: T | BtcSectionIntroBlockSelect<T>;
         btcServicesGrid?: T | BtcServicesGridBlockSelect<T>;
         btcBenefitsSplit?: T | BtcBenefitsSplitBlockSelect<T>;
@@ -1498,6 +1539,29 @@ export interface BtcHeroBlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcAboutHeroBlock_select".
+ */
+export interface BtcAboutHeroBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  headline?: T;
+  headlineAccent?: T;
+  lead?: T;
+  highlights?:
+    | T
+    | {
+        tone?: T;
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  media?: T;
+  cardTitle?: T;
+  cardSubtitle?: T;
   id?: T;
   blockName?: T;
 }
