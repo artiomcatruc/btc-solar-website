@@ -1,5 +1,10 @@
 import type { Block } from 'payload'
 
+const backgroundOptions = [
+  { label: 'Graphite (light gray)', value: 'graphite' },
+  { label: 'White', value: 'white' },
+] as const
+
 export const BtcSectionIntro: Block = {
   slug: 'btcSectionIntro',
   interfaceName: 'BtcSectionIntroBlock',
@@ -32,6 +37,12 @@ export const BtcSectionIntro: Block = {
         { label: 'Left', value: 'left' },
         { label: 'Right', value: 'right' },
       ],
+    },
+    {
+      name: 'background',
+      type: 'select',
+      defaultValue: 'graphite',
+      options: [...backgroundOptions],
     },
   ],
 }

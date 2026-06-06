@@ -560,6 +560,7 @@ export interface BtcSectionIntroBlock {
    */
   lead?: string | null;
   align?: ('center' | 'left' | 'right') | null;
+  background?: ('graphite' | 'white') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'btcSectionIntro';
@@ -573,6 +574,7 @@ export interface BtcServicesGridBlock {
    * Select services in presentation order.
    */
   services?: (number | Service)[] | null;
+  background?: ('graphite' | 'white') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'btcServicesGrid';
@@ -585,7 +587,25 @@ export interface Service {
   id: number;
   title: string;
   summary: string;
-  icon: 'home' | 'building' | 'shield' | 'bolt' | 'cog' | 'chart';
+  /**
+   * Lucide-based icons from the shared BTC icon registry.
+   */
+  icon:
+    | 'home'
+    | 'building'
+    | 'shield'
+    | 'bolt'
+    | 'cog'
+    | 'chart'
+    | 'lightbulb'
+    | 'globe'
+    | 'zap'
+    | 'sun'
+    | 'battery'
+    | 'wrench'
+    | 'users'
+    | 'check'
+    | 'leaf';
   /**
    * Lower sorts first.
    */
@@ -1574,6 +1594,7 @@ export interface BtcSectionIntroBlockSelect<T extends boolean = true> {
   heading?: T;
   lead?: T;
   align?: T;
+  background?: T;
   id?: T;
   blockName?: T;
 }
@@ -1583,6 +1604,7 @@ export interface BtcSectionIntroBlockSelect<T extends boolean = true> {
  */
 export interface BtcServicesGridBlockSelect<T extends boolean = true> {
   services?: T;
+  background?: T;
   id?: T;
   blockName?: T;
 }

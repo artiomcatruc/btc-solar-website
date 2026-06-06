@@ -1,16 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
+import { BTC_ICON_SELECT_OPTIONS } from '@/components/BtcIcon'
+
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
-
-export const SERVICE_ICONS = [
-  'home',
-  'building',
-  'shield',
-  'bolt',
-  'cog',
-  'chart',
-] as const
 
 export const Services: CollectionConfig<'services'> = {
   slug: 'services',
@@ -25,7 +18,7 @@ export const Services: CollectionConfig<'services'> = {
     update: authenticated,
   },
   admin: {
-    defaultColumns: ['title', 'sort', 'updatedAt'],
+    defaultColumns: ['title', 'icon', 'sort', 'updatedAt'],
     useAsTitle: 'title',
   },
   fields: [
@@ -44,10 +37,10 @@ export const Services: CollectionConfig<'services'> = {
       type: 'select',
       required: true,
       defaultValue: 'home',
-      options: SERVICE_ICONS.map((value) => ({
-        label: value.charAt(0).toUpperCase() + value.slice(1),
-        value,
-      })),
+      options: BTC_ICON_SELECT_OPTIONS,
+      admin: {
+        description: 'Lucide-based icons from the shared BTC icon registry.',
+      },
     },
     {
       name: 'sort',

@@ -36,13 +36,7 @@ export async function RenderBlocks({ blocks }: { blocks: Layout }) {
       'id' in block && typeof block.id === 'string' ? block.id : 'row'
     }`
 
-    const previousBlock = index > 0 ? blocks[index - 1] : null
-    const nextBlock = index < blocks.length - 1 ? blocks[index + 1] : null
-    const pairsWithServicesGrid =
-      block.blockType === 'btcSectionIntro' && nextBlock?.blockType === 'btcServicesGrid'
-    const followsSectionIntro =
-      block.blockType === 'btcServicesGrid' && previousBlock?.blockType === 'btcSectionIntro'
-    const skipMargin = block.blockType === 'btcHero' || pairsWithServicesGrid || followsSectionIntro
+    const skipMargin = block.blockType === 'btcHero'
 
     const addSection = (node: React.ReactNode) => {
       if (skipMargin) {
@@ -63,19 +57,12 @@ export async function RenderBlocks({ blocks }: { blocks: Layout }) {
     }
 
     if (block.blockType === 'btcSectionIntro') {
-      addSection(
-        <BtcSectionIntroBlockComponent
-          {...block}
-          continuesToServicesGrid={pairsWithServicesGrid}
-        />,
-      )
+      addSection(<BtcSectionIntroBlockComponent {...block} />)
       continue
     }
 
     if (block.blockType === 'btcServicesGrid') {
-      addSection(
-        <BtcServicesGridBlockComponent {...block} followsSectionIntro={followsSectionIntro} />,
-      )
+      addSection(<BtcServicesGridBlockComponent {...block} />)
       continue
     }
 

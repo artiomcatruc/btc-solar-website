@@ -3,16 +3,18 @@ import React from 'react'
 
 import type { BtcSectionIntroBlock } from '@/payload-types'
 
-type Props = BtcSectionIntroBlock & {
-  continuesToServicesGrid?: boolean
-}
-
 type Align = NonNullable<BtcSectionIntroBlock['align']>
+type Background = NonNullable<BtcSectionIntroBlock['background']>
 
 const alignClass: Record<Align, string> = {
   center: 'text-center',
   left: 'text-left',
   right: 'text-right',
+}
+
+const backgroundClass: Record<Background, string> = {
+  graphite: 'bg-graphite-50',
+  white: 'bg-white',
 }
 
 const splitLeadParagraphs = (lead?: string | null): string[] => {
@@ -24,26 +26,30 @@ const splitLeadParagraphs = (lead?: string | null): string[] => {
     .filter(Boolean)
 }
 
-export const BtcSectionIntroBlockComponent: React.FC<Props> = (props) => {
-  const { eyebrow, heading, lead, align = 'center', continuesToServicesGrid = false } = props
+export const BtcSectionIntroBlockComponent: React.FC<BtcSectionIntroBlock> = (props) => {
+  const { eyebrow, heading, lead, align = 'center', background = 'graphite' } = props
   const textAlign = alignClass[align ?? 'center']
   const paragraphs = splitLeadParagraphs(lead)
   const isProseLayout = paragraphs.length > 1
+  const leadText = paragraphs[0] ?? lead?.trim()
 
-  if (isProseLayout) {
-    return (
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl">
-            <div className={cn('fade-in-visible mb-16', textAlign)}>
-              {eyebrow ? (
-                <span className="text-sm font-semibold uppercase tracking-wider text-solar-500">
-                  {eyebrow}
-                </span>
-              ) : null}
-              <h2 className="mt-4 mb-6 text-3xl font-bold text-graphite-900 md:text-5xl">{heading}</h2>
-            </div>
+  return (
+    <section className={cn(backgroundClass[background ?? 'graphite'], 'py-24')}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl">
+          <div className={cn('fade-in-visible', textAlign, isProseLayout ? 'mb-16' : undefined)}>
+            {eyebrow ? (
+              <span className="text-sm font-semibold uppercase tracking-wider text-solar-500">
+                {eyebrow}
+              </span>
+            ) : null}
+            <h2 className="mt-4 mb-6 text-3xl font-bold text-graphite-900 md:text-5xl">{heading}</h2>
+            {!isProseLayout && leadText ? (
+              <p className="text-lg leading-relaxed text-graphite-600">{leadText}</p>
+            ) : null}
+          </div>
 
+          {isProseLayout ? (
             <div className={cn('prose prose-lg fade-in-visible max-w-none', textAlign)}>
               {paragraphs.map((paragraph, i) => (
                 <p
@@ -57,31 +63,7 @@ export const BtcSectionIntroBlockComponent: React.FC<Props> = (props) => {
                 </p>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  const leadText = paragraphs[0] ?? lead?.trim()
-
-  return (
-    <section className={cn('bg-graphite-50 pt-24', continuesToServicesGrid ? 'pb-16' : 'pb-24')}>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div
-            className={cn('fade-in-visible', textAlign, continuesToServicesGrid ? 'mb-16' : undefined)}
-          >
-            {eyebrow ? (
-              <span className="text-sm font-semibold uppercase tracking-wider text-solar-500">
-                {eyebrow}
-              </span>
-            ) : null}
-            <h2 className="mt-4 mb-6 text-3xl font-bold text-graphite-900 md:text-5xl">{heading}</h2>
-            {leadText ? (
-              <p className="text-lg leading-relaxed text-graphite-600">{leadText}</p>
-            ) : null}
-          </div>
+          ) : null}
         </div>
       </div>
     </section>
