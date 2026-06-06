@@ -625,9 +625,15 @@ export interface BtcBenefitsSplitBlock {
    */
   eyebrow?: string | null;
   heading: string;
+  mediaPosition?: ('left' | 'right') | null;
+  listStyle?: ('icons' | 'checks') | null;
+  /**
+   * Accent color for checklist markers.
+   */
+  checkTone?: ('solar' | 'eco' | 'graphite') | null;
   benefits?:
     | {
-        tone: 'eco' | 'solar' | 'graphite';
+        tone?: ('solar' | 'eco' | 'graphite') | null;
         title: string;
         description: string;
         id?: string | null;
@@ -635,11 +641,11 @@ export interface BtcBenefitsSplitBlock {
     | null;
   media: number | Media;
   /**
-   * Floating badge title
+   * Optional floating badge title.
    */
   cardTitle?: string | null;
   /**
-   * Badge subtitle line
+   * Optional badge subtitle.
    */
   cardSubtitle?: string | null;
   id?: string | null;
@@ -803,10 +809,11 @@ export interface Faq {
  * via the `definition` "BtcCtaBannerBlock".
  */
 export interface BtcCtaBannerBlock {
+  colorScheme?: ('dark' | 'graphite') | null;
   /**
-   * Dimmed imagery behind text.
+   * Optional background image overlay for the dark theme.
    */
-  background: number | Media;
+  image?: (number | null) | Media;
   title: string;
   description?: string | null;
   links?:
@@ -1654,6 +1661,9 @@ export interface BtcServicesGridBlockSelect<T extends boolean = true> {
 export interface BtcBenefitsSplitBlockSelect<T extends boolean = true> {
   eyebrow?: T;
   heading?: T;
+  mediaPosition?: T;
+  listStyle?: T;
+  checkTone?: T;
   benefits?:
     | T
     | {
@@ -1734,7 +1744,8 @@ export interface BtcFaqAccordionBlockSelect<T extends boolean = true> {
  * via the `definition` "BtcCtaBannerBlock_select".
  */
 export interface BtcCtaBannerBlockSelect<T extends boolean = true> {
-  background?: T;
+  colorScheme?: T;
+  image?: T;
   title?: T;
   description?: T;
   links?:

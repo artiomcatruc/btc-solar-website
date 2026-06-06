@@ -5,6 +5,8 @@ import React from 'react'
 
 import type { BtcHeroBlock } from '@/payload-types'
 
+import { ScrollDownIndicator } from './ScrollDownIndicator'
+
 const ButtonArrow = () => (
   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
     <path
@@ -20,7 +22,10 @@ export const BtcHeroBlockComponent: React.FC<BtcHeroBlock> = (props) => {
   const { badge, headline, headlineAccent, description, background, buttons } = props
 
   return (
-    <section className="relative -mt-20 flex min-h-screen items-center justify-center overflow-hidden">
+    <section
+      className="relative -mt-20 flex min-h-screen items-center justify-center overflow-hidden"
+      data-btc-hero
+    >
       <div className="absolute inset-0">
         {typeof background === 'object' && background?.id ? (
           <Media
@@ -70,22 +75,7 @@ export const BtcHeroBlockComponent: React.FC<BtcHeroBlock> = (props) => {
           </div>
         ) : null}
       </div>
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-        <svg
-          className="h-6 w-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M19 14l-7 7m0 0l-7-7m7 7V3"
-          />
-        </svg>
-      </div>
+      <ScrollDownIndicator />
     </section>
   )
 }

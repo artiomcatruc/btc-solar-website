@@ -54,6 +54,7 @@ const iconSizeClass: Record<BtcIconBoxSize, string> = {
 
 type BtcIconBoxProps = BtcIconProps & {
   size?: BtcIconBoxSize
+  tone?: BtcIconTone | null
   boxClassName?: string
 }
 
@@ -61,18 +62,19 @@ type BtcIconBoxProps = BtcIconProps & {
 export const BtcIconBox: React.FC<BtcIconBoxProps> = ({
   name,
   size = 'md',
+  tone,
   className,
   boxClassName,
   strokeWidth = 2,
 }) => {
-  const tone = getBtcIconTone(name)
+  const resolvedTone = tone ?? getBtcIconTone(name)
 
   return (
     <div
       className={cn(
         'flex shrink-0 items-center justify-center rounded-2xl',
         boxSizeClass[size],
-        BTC_ICON_TONE_CLASS[tone],
+        BTC_ICON_TONE_CLASS[resolvedTone],
         boxClassName,
       )}
       aria-hidden

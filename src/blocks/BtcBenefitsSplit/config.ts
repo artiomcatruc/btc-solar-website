@@ -1,10 +1,17 @@
 import type { Block } from 'payload'
 
 const toneOptions = [
-  { label: 'Eco green', value: 'eco' },
   { label: 'Solar amber', value: 'solar' },
+  { label: 'Eco green', value: 'eco' },
   { label: 'Graphite neutral', value: 'graphite' },
 ] as const
+
+type BlockData = { listStyle?: string }
+
+const isListStyle =
+  (style: string) =>
+  (_data: unknown, _siblingData: unknown, { blockData }: { blockData?: BlockData }) =>
+    blockData?.listStyle === style
 
 export const BtcBenefitsSplit: Block = {
   slug: 'btcBenefitsSplit',
@@ -24,6 +31,34 @@ export const BtcBenefitsSplit: Block = {
       defaultValue: 'Benefits of Going Solar',
     },
     {
+      name: 'mediaPosition',
+      type: 'select',
+      defaultValue: 'right',
+      options: [
+        { label: 'Media left, content right', value: 'left' },
+        { label: 'Content left, media right', value: 'right' },
+      ],
+    },
+    {
+      name: 'listStyle',
+      type: 'select',
+      defaultValue: 'icons',
+      options: [
+        { label: 'Icons (square tiles)', value: 'icons' },
+        { label: 'Checklist (round checks)', value: 'checks' },
+      ],
+    },
+    {
+      name: 'checkTone',
+      type: 'select',
+      defaultValue: 'solar',
+      options: [...toneOptions],
+      admin: {
+        condition: isListStyle('checks'),
+        description: 'Accent color for checklist markers.',
+      },
+    },
+    {
       name: 'benefits',
       type: 'array',
       labels: {
@@ -37,6 +72,9 @@ export const BtcBenefitsSplit: Block = {
           required: true,
           defaultValue: 'eco',
           options: [...toneOptions],
+          admin: {
+            condition: isListStyle('icons'),
+          },
         },
         {
           name: 'title',
@@ -62,7 +100,7 @@ export const BtcBenefitsSplit: Block = {
         {
           name: 'cardTitle',
           type: 'text',
-          admin: { width: '50%', placeholder: '25+ Years', description: 'Floating badge title' },
+          admin: { width: '50%', placeholder: '25+ Years', description: 'Optional floating badge title.' },
         },
         {
           name: 'cardSubtitle',
@@ -70,7 +108,7 @@ export const BtcBenefitsSplit: Block = {
           admin: {
             width: '50%',
             placeholder: 'Panel Warranty',
-            description: 'Badge subtitle line',
+            description: 'Optional badge subtitle.',
           },
         },
       ],
