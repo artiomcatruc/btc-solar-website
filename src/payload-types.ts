@@ -605,7 +605,9 @@ export interface Service {
     | 'wrench'
     | 'users'
     | 'check'
-    | 'leaf';
+    | 'leaf'
+    | 'award'
+    | 'heart';
   /**
    * Lower sorts first.
    */
@@ -650,6 +652,11 @@ export interface BtcBenefitsSplitBlock {
  */
 export interface BtcProcessStepsBlock {
   /**
+   * Process: numbered flow. Icons: round icon grid. Cards: badge tiles on dark backgrounds.
+   */
+  variant?: ('process' | 'icons' | 'cards') | null;
+  background?: ('dark' | 'white') | null;
+  /**
    * e.g. HOW IT WORKS
    */
   eyebrow?: string | null;
@@ -659,6 +666,38 @@ export interface BtcProcessStepsBlock {
     | {
         title: string;
         description: string;
+        /**
+         * Icon for the values layout.
+         */
+        icon?:
+          | (
+              | 'home'
+              | 'building'
+              | 'shield'
+              | 'bolt'
+              | 'cog'
+              | 'chart'
+              | 'lightbulb'
+              | 'globe'
+              | 'zap'
+              | 'sun'
+              | 'battery'
+              | 'wrench'
+              | 'users'
+              | 'check'
+              | 'leaf'
+              | 'award'
+              | 'heart'
+            )
+          | null;
+        /**
+         * Short label inside the circle, e.g. ISO, CE, TÜV.
+         */
+        badge?: string | null;
+        /**
+         * Accent color for the step marker or badge.
+         */
+        tone?: ('solar' | 'eco' | 'graphite') | null;
         id?: string | null;
       }[]
     | null;
@@ -1634,6 +1673,8 @@ export interface BtcBenefitsSplitBlockSelect<T extends boolean = true> {
  * via the `definition` "BtcProcessStepsBlock_select".
  */
 export interface BtcProcessStepsBlockSelect<T extends boolean = true> {
+  variant?: T;
+  background?: T;
   eyebrow?: T;
   title?: T;
   intro?: T;
@@ -1642,6 +1683,9 @@ export interface BtcProcessStepsBlockSelect<T extends boolean = true> {
     | {
         title?: T;
         description?: T;
+        icon?: T;
+        badge?: T;
+        tone?: T;
         id?: T;
       };
   id?: T;

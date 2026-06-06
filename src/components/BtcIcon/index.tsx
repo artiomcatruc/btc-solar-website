@@ -3,9 +3,12 @@ import React from 'react'
 
 import {
   BTC_ICON_TONE_CLASS,
+  BTC_ICON_TONE_DARK_CLASS,
   getBtcIconComponent,
   getBtcIconTone,
+  isBtcIconKey,
   type BtcIconKey,
+  type BtcIconTone,
 } from './registry'
 
 export {
@@ -15,6 +18,7 @@ export {
   BTC_ICON_SELECT_OPTIONS,
   BTC_ICON_TONE,
   BTC_ICON_TONE_CLASS,
+  BTC_ICON_TONE_DARK_CLASS,
   getBtcIconComponent,
   getBtcIconTone,
   isBtcIconKey,
@@ -74,6 +78,58 @@ export const BtcIconBox: React.FC<BtcIconBoxProps> = ({
       aria-hidden
     >
       <BtcIcon className={cn(iconSizeClass[size], className)} name={name} strokeWidth={strokeWidth} />
+    </div>
+  )
+}
+
+type BtcIconCircleSize = 'md' | 'lg'
+
+const circleBoxSizeClass: Record<BtcIconCircleSize, string> = {
+  md: 'h-16 w-16',
+  lg: 'h-20 w-20',
+}
+
+const circleIconSizeClass: Record<BtcIconCircleSize, string> = {
+  md: 'h-8 w-8',
+  lg: 'h-10 w-10',
+}
+
+type BtcIconCircleProps = BtcIconProps & {
+  tone?: BtcIconTone | null
+  size?: BtcIconCircleSize
+  theme?: 'light' | 'dark'
+  boxClassName?: string
+}
+
+/** Icon inside a circular BTC tile (values grid, process markers). */
+export const BtcIconCircle: React.FC<BtcIconCircleProps> = ({
+  name,
+  tone,
+  size = 'lg',
+  theme = 'light',
+  className,
+  boxClassName,
+  strokeWidth = 2,
+}) => {
+  const resolvedTone = tone ?? getBtcIconTone(name)
+  const toneClass =
+    theme === 'dark' ? BTC_ICON_TONE_DARK_CLASS[resolvedTone] : BTC_ICON_TONE_CLASS[resolvedTone]
+
+  return (
+    <div
+      className={cn(
+        'mx-auto flex shrink-0 items-center justify-center rounded-full',
+        circleBoxSizeClass[size],
+        toneClass,
+        boxClassName,
+      )}
+      aria-hidden
+    >
+      <BtcIcon
+        className={cn(circleIconSizeClass[size], className)}
+        name={name}
+        strokeWidth={strokeWidth}
+      />
     </div>
   )
 }

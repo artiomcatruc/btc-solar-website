@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import {
+  Award,
   BarChart3,
   Battery,
   Bolt,
@@ -7,6 +8,7 @@ import {
   CircleCheck,
   Cog,
   Globe2,
+  Heart,
   Home,
   Leaf,
   Lightbulb,
@@ -33,6 +35,8 @@ export const BTC_ICON_KEYS = [
   'users',
   'check',
   'leaf',
+  'award',
+  'heart',
 ] as const
 
 export type BtcIconKey = (typeof BTC_ICON_KEYS)[number]
@@ -54,6 +58,8 @@ export const BTC_ICON_MAP: Record<BtcIconKey, LucideIcon> = {
   users: Users,
   check: CircleCheck,
   leaf: Leaf,
+  award: Award,
+  heart: Heart,
 }
 
 export const BTC_ICON_LABELS: Record<BtcIconKey, string> = {
@@ -72,6 +78,8 @@ export const BTC_ICON_LABELS: Record<BtcIconKey, string> = {
   users: 'Users',
   check: 'Check',
   leaf: 'Leaf',
+  award: 'Award',
+  heart: 'Heart',
 }
 
 export const BTC_ICON_TONE: Record<BtcIconKey, BtcIconTone> = {
@@ -90,12 +98,20 @@ export const BTC_ICON_TONE: Record<BtcIconKey, BtcIconTone> = {
   users: 'eco',
   check: 'solar',
   leaf: 'eco',
+  award: 'solar',
+  heart: 'solar',
 }
 
 export const BTC_ICON_TONE_CLASS: Record<BtcIconTone, string> = {
   solar: 'bg-solar-100 text-solar-500',
   eco: 'bg-eco-100 text-eco-500',
   graphite: 'bg-graphite-100 text-graphite-600',
+}
+
+export const BTC_ICON_TONE_DARK_CLASS: Record<BtcIconTone, string> = {
+  solar: 'bg-solar-400/20 text-solar-400',
+  eco: 'bg-eco-400/20 text-eco-400',
+  graphite: 'bg-white/10 text-graphite-300',
 }
 
 export const BTC_ICON_SELECT_OPTIONS = BTC_ICON_KEYS.map((value) => ({
