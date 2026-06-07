@@ -114,7 +114,7 @@ export async function RenderBlocks({ blocks }: { blocks: Layout }) {
     }
 
     if (block.blockType === 'btcContactSection') {
-      addSection(<BtcContactSectionComponent {...block} />)
+      addSection(await BtcContactSectionComponent(block))
       continue
     }
 

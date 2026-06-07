@@ -36,8 +36,48 @@ export const Site: GlobalConfig = {
       ],
     },
     {
+      name: 'phones',
+      type: 'array',
+      admin: {
+        description: 'Optional extra phone numbers shown on the contact page.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'number',
+          type: 'text',
+          required: true,
+        },
+      ],
+    },
+    {
+      name: 'emails',
+      type: 'array',
+      admin: {
+        description: 'Optional extra email addresses shown on the contact page.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'address',
+          type: 'email',
+          required: true,
+        },
+      ],
+    },
+    {
       name: 'address',
       type: 'textarea',
+      admin: {
+        description: 'Use line breaks for multi-line addresses.',
+      },
+    },
+    {
+      name: 'workingHours',
+      type: 'textarea',
+      admin: {
+        description: 'One line per entry, e.g. Monday - Friday: 9:00 - 18:00',
+      },
     },
     {
       name: 'defaultLocale',

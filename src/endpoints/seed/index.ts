@@ -243,7 +243,11 @@ export const seed = async ({
           'Premium solar panel installation across Moldova. Residential and commercial renewable energy solutions.',
         phone: '+373 22 000 000',
         email: 'info@btcsolar.md',
-        address: 'Chisinau, Moldova',
+        phones: [{ number: '+373 22 000 000' }, { number: '+373 60 000 000' }],
+        emails: [{ address: 'info@btcsolar.md' }, { address: 'sales@btcsolar.md' }],
+        address: 'Str. Stefan cel Mare 123\nChisinau, MD-2001\nRepublic of Moldova',
+        workingHours:
+          'Monday - Friday: 9:00 - 18:00\nSaturday: 10:00 - 14:00\nSunday: Closed',
         defaultLocale: 'en',
         socialLinks: [
           {
@@ -260,6 +264,10 @@ export const seed = async ({
           },
           {
             label: 'LinkedIn',
+            url: '#',
+          },
+          {
+            label: 'Twitter',
             url: '#',
           },
         ],

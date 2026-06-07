@@ -7,6 +7,7 @@ import React from 'react'
 
 import { Error } from '../Error'
 import { Width } from '../Width'
+import { BtcLabel, btcFieldClass, getBtcPlaceholder, useFormAppearance } from '../appearance'
 
 export const Textarea: React.FC<
   TextField & {
@@ -15,24 +16,41 @@ export const Textarea: React.FC<
     rows?: number
   }
 > = ({ name, defaultValue, errors, label, register, required, rows = 3, width }) => {
+  const appearance = useFormAppearance()
+  const isBtc = appearance === 'btc'
+
   return (
     <Width width={width}>
-      <Label htmlFor={name}>
-        {label}
+      {isBtc ? (
+        <BtcLabel htmlFor={name || ''} label={label || ''} required={required} />
+      ) : (
+        <Label htmlFor={name}>
+          {label}
+          {required ? (
+            <span className="required">
+              * <span className="sr-only">(required)</span>
+            </span>
+          ) : null}
+        </Label>
+      )}
 
-        {required && (
-          <span className="required">
-            * <span className="sr-only">(required)</span>
-          </span>
-        )}
-      </Label>
-
-      <TextAreaComponent
-        defaultValue={defaultValue}
-        id={name}
-        rows={rows}
-        {...register(name, { required: required })}
-      />
+      {isBtc ? (
+        <textarea
+          className={`${btcFieldClass} resize-none`}
+          defaultValue={defaultValue ?? undefined}
+          id={name}
+          placeholder={getBtcPlaceholder(name || '', label || '')}
+          rows={4}
+          {...register(name, { required: required })}
+        />
+      ) : (
+        <TextAreaComponent
+          defaultValue={defaultValue}
+          id={name}
+          rows={rows}
+          {...register(name, { required: required })}
+        />
+      )}
 
       {errors[name] && <Error name={name} />}
     </Width>
