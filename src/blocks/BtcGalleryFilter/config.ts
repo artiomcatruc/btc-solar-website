@@ -32,30 +32,19 @@ export const BtcGalleryFilter: Block = {
       options: [...backgroundOptions],
     },
     {
-      name: 'filters',
-      type: 'array',
-      minRows: 1,
-      defaultValue: [
-        { label: 'All Projects', value: 'all' },
-        { label: 'Residential', value: 'residential' },
-        { label: 'Commercial', value: 'commercial' },
-      ],
-      labels: { singular: 'Filter', plural: 'Filters' },
-      fields: [
-        {
-          name: 'label',
-          type: 'text',
-          required: true,
-        },
-        {
-          name: 'value',
-          type: 'text',
-          required: true,
-          admin: {
-            description: 'Use "all" for the catch-all filter, or a gallery item category slug.',
-          },
-        },
-      ],
+      name: 'allLabel',
+      type: 'text',
+      defaultValue: 'All Projects',
+      admin: { description: 'Label for the catch-all filter button.' },
+    },
+    {
+      name: 'categories',
+      type: 'relationship',
+      relationTo: 'categories',
+      hasMany: true,
+      admin: {
+        description: 'Leave empty to show every category. Order here controls filter button order.',
+      },
     },
   ],
 }

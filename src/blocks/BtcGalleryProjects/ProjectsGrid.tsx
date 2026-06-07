@@ -6,13 +6,13 @@ import { MapPin } from 'lucide-react'
 import Image from 'next/image'
 import React, { useEffect, useMemo, useState } from 'react'
 
-import type { SerializedGalleryProject } from './types'
+import type { GalleryBadgeTone, SerializedGalleryProject } from './types'
 import { GalleryLightbox, type LightboxState } from './Lightbox'
 
-const categoryBadgeClass: Record<string, string> = {
-  residential: 'bg-eco-500 text-white',
-  commercial: 'bg-solar-500 text-graphite-900',
-  other: 'bg-graphite-600 text-white',
+const badgeToneClass: Record<GalleryBadgeTone, string> = {
+  solar: 'bg-solar-500 text-graphite-900',
+  eco: 'bg-eco-500 text-white',
+  graphite: 'bg-graphite-600 text-white',
 }
 
 type Props = {
@@ -62,7 +62,7 @@ export const GalleryProjectsGrid: React.FC<Props> = ({ groupId, items }) => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {visibleItems.map((item) => {
           const isLarge = item.layout === 'large'
-          const badgeClass = categoryBadgeClass[item.category] ?? categoryBadgeClass.other
+          const badgeClass = badgeToneClass[item.badgeTone] ?? badgeToneClass.eco
 
           return (
             <button

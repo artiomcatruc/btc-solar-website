@@ -1,6 +1,9 @@
+export type GalleryBadgeTone = 'solar' | 'eco' | 'graphite'
+
 export type SerializedGalleryProject = {
   id: number
   category: string
+  badgeTone: GalleryBadgeTone
   title: string
   lightboxTitle: string
   badgeLabel: string

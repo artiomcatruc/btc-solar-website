@@ -3,8 +3,6 @@ import type { CollectionConfig } from 'payload'
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 
-export const GALLERY_CATEGORIES = ['residential', 'commercial', 'other'] as const
-
 export const GalleryItems: CollectionConfig<'gallery-items'> = {
   slug: 'gallery-items',
   labels: {
@@ -40,19 +38,18 @@ export const GalleryItems: CollectionConfig<'gallery-items'> = {
     },
     {
       name: 'category',
-      type: 'select',
+      type: 'relationship',
+      relationTo: 'categories',
       required: true,
-      defaultValue: 'residential',
-      options: GALLERY_CATEGORIES.map((value) => ({
-        label: value.charAt(0).toUpperCase() + value.slice(1),
-        value,
-      })),
+      admin: {
+        description: 'Used for gallery filtering and category pills.',
+      },
     },
     {
       name: 'badgeLabel',
       type: 'text',
       admin: {
-        description: 'Optional pill label override, e.g. Detail or Behind the Scenes.',
+        description: 'Optional pill label override. Defaults to the category title.',
       },
     },
     {

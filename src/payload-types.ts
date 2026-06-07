@@ -433,6 +433,10 @@ export interface Category {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Accent color for gallery category pills.
+   */
+  badgeTone?: ('solar' | 'eco' | 'graphite') | null;
   parent?: (number | null) | Category;
   breadcrumbs?:
     | {
@@ -856,16 +860,14 @@ export interface BtcGalleryFilterBlock {
    */
   sticky?: boolean | null;
   background?: ('white' | 'graphite') | null;
-  filters?:
-    | {
-        label: string;
-        /**
-         * Use "all" for the catch-all filter, or a gallery item category slug.
-         */
-        value: string;
-        id?: string | null;
-      }[]
-    | null;
+  /**
+   * Label for the catch-all filter button.
+   */
+  allLabel?: string | null;
+  /**
+   * Leave empty to show every category. Order here controls filter button order.
+   */
+  categories?: (number | Category)[] | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'btcGalleryFilter';
@@ -903,9 +905,12 @@ export interface GalleryItem {
    * Legacy title field and lightbox subtitle support.
    */
   caption?: string | null;
-  category: 'residential' | 'commercial' | 'other';
   /**
-   * Optional pill label override, e.g. Detail or Behind the Scenes.
+   * Used for gallery filtering and category pills.
+   */
+  category: number | Category;
+  /**
+   * Optional pill label override. Defaults to the category title.
    */
   badgeLabel?: string | null;
   /**
@@ -1864,13 +1869,8 @@ export interface BtcGalleryFilterBlockSelect<T extends boolean = true> {
   groupId?: T;
   sticky?: T;
   background?: T;
-  filters?:
-    | T
-    | {
-        label?: T;
-        value?: T;
-        id?: T;
-      };
+  allLabel?: T;
+  categories?: T;
   id?: T;
   blockName?: T;
 }
@@ -2141,6 +2141,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
   generateSlug?: T;
   slug?: T;
+  badgeTone?: T;
   parent?: T;
   breadcrumbs?:
     | T

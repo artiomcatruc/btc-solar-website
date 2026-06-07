@@ -99,7 +99,7 @@ export async function RenderBlocks({ blocks }: { blocks: Layout }) {
     }
 
     if (block.blockType === 'btcGalleryFilter') {
-      addSection(<BtcGalleryFilterBlockComponent {...block} />)
+      addSection(await BtcGalleryFilterBlockComponent(block))
       continue
     }
 

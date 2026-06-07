@@ -2,10 +2,10 @@ import { cn } from '@/utilities/ui'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import React from 'react'
 
-import type { BtcGalleryProjectsBlock, GalleryItem, Media } from '@/payload-types'
+import type { BtcGalleryProjectsBlock, Category, GalleryItem, Media } from '@/payload-types'
 
 import { GalleryProjectsGrid } from './ProjectsGrid'
-import type { SerializedGalleryProject } from './types'
+import type { GalleryBadgeTone, SerializedGalleryProject } from './types'
 
 type Background = NonNullable<BtcGalleryProjectsBlock['background']>
 
@@ -14,13 +14,28 @@ const backgroundClass: Record<Background, string> = {
   white: 'bg-white',
 }
 
-const categoryLabel = (category: GalleryItem['category']) =>
-  category.charAt(0).toUpperCase() + category.slice(1)
+const isTone = (value?: string | null): value is GalleryBadgeTone =>
+  value === 'solar' || value === 'eco' || value === 'graphite'
+
+const resolveCategory = (
+  category: GalleryItem['category'],
+): { slug: string; title: string; badgeTone: GalleryBadgeTone } | null => {
+  if (typeof category !== 'object' || !category?.slug) return null
+
+  const doc = category as Category
+
+  return {
+    slug: doc.slug as string,
+    title: doc.title,
+    badgeTone: isTone(doc.badgeTone) ? doc.badgeTone : 'eco',
+  }
+}
 
 const serializeItem = (item: GalleryItem): SerializedGalleryProject | null => {
   const image = item.image
+  const category = resolveCategory(item.category)
 
-  if (typeof image !== 'object' || !image?.url) return null
+  if (typeof image !== 'object' || !image?.url || !category) return null
 
   const media = image as Media
   const title = item.title || item.caption || 'Project'
@@ -28,15 +43,16 @@ const serializeItem = (item: GalleryItem): SerializedGalleryProject | null => {
 
   return {
     id: item.id,
-    category: item.category,
+    category: category.slug,
+    badgeTone: category.badgeTone,
     title,
     lightboxTitle,
-    badgeLabel: item.badgeLabel || categoryLabel(item.category),
+    badgeLabel: item.badgeLabel || category.title,
     location: item.location,
     systemSize: item.systemSize,
     layout: item.layout === 'large' ? 'large' : 'normal',
     imageUrl: getMediaUrl(media.url, media.updatedAt),
-    imageAlt: media.alt || item.title || '',
+    imageAlt: media.alt || title,
   }
 }
 
