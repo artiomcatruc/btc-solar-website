@@ -259,6 +259,24 @@
     box-shadow: 0 20px 40px rgb(0 0 0 / 0.1);
   }
 
+  .gallery-item {
+    transition: transform 0.3s ease;
+  }
+
+  .gallery-item:hover {
+    transform: scale(1.02);
+  }
+
+  .gallery-overlay {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .gallery-item:hover .gallery-overlay,
+  .gallery-item:focus-visible .gallery-overlay {
+    opacity: 1;
+  }
+
   .fade-in {
     opacity: 0;
     transform: translateY(30px);

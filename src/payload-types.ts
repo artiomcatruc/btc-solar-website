@@ -224,7 +224,9 @@ export interface Page {
     | BtcTestimonialsGridBlock
     | BtcFaqAccordionBlock
     | BtcCtaBannerBlock
-    | BtcGalleryGridBlock
+    | BtcGalleryFilterBlock
+    | BtcGalleryProjectsBlock
+    | BtcDifferenceBlock
     | BtcContactSectionBlock
     | CallToActionBlock
     | ContentBlock
@@ -842,18 +844,49 @@ export interface BtcCtaBannerBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "BtcGalleryGridBlock".
+ * via the `definition` "BtcGalleryFilterBlock".
  */
-export interface BtcGalleryGridBlock {
-  eyebrow?: string | null;
-  title: string;
+export interface BtcGalleryFilterBlock {
   /**
-   * Select gallery items.
+   * Must match the BTC Gallery Projects block on the same page.
+   */
+  groupId: string;
+  /**
+   * Pin the filter bar below the header while scrolling.
+   */
+  sticky?: boolean | null;
+  background?: ('white' | 'graphite') | null;
+  filters?:
+    | {
+        label: string;
+        /**
+         * Use "all" for the catch-all filter, or a gallery item category slug.
+         */
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcGalleryFilter';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcGalleryProjectsBlock".
+ */
+export interface BtcGalleryProjectsBlock {
+  /**
+   * Must match the BTC Gallery Filter block on the same page.
+   */
+  groupId: string;
+  background?: ('white' | 'graphite') | null;
+  /**
+   * Gallery items in presentation order.
    */
   items?: (number | GalleryItem)[] | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'btcGalleryGrid';
+  blockType: 'btcGalleryProjects';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -862,15 +895,71 @@ export interface BtcGalleryGridBlock {
 export interface GalleryItem {
   id: number;
   image: number | Media;
-  caption: string;
+  /**
+   * Project title shown in the overlay. Falls back to caption when empty.
+   */
+  title?: string | null;
+  /**
+   * Legacy title field and lightbox subtitle support.
+   */
+  caption?: string | null;
   category: 'residential' | 'commercial' | 'other';
   /**
-   * Town or label shown in overlays
+   * Optional pill label override, e.g. Detail or Behind the Scenes.
+   */
+  badgeLabel?: string | null;
+  /**
+   * Town or label shown in overlays.
    */
   location?: string | null;
+  /**
+   * Optional stat line, e.g. 15 kW System.
+   */
+  systemSize?: string | null;
+  /**
+   * Large tiles span two columns on desktop.
+   */
+  layout?: ('normal' | 'large') | null;
   sort?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcDifferenceBlock".
+ */
+export interface BtcDifferenceBlock {
+  background?: ('graphite' | 'white') | null;
+  /**
+   * Uppercase label above the heading.
+   */
+  eyebrow?: string | null;
+  heading: string;
+  /**
+   * Optional lead paragraph below the heading.
+   */
+  intro?: string | null;
+  columns?: ('2' | '3') | null;
+  cards?:
+    | {
+        image: number | Media;
+        badge?: string | null;
+        badgeTone?: ('solar' | 'eco' | 'graphite') | null;
+        title: string;
+        description: string;
+        metaLabel?: string | null;
+        metaValue?: string | null;
+        highlight?: string | null;
+        /**
+         * Accent color for the highlight stat.
+         */
+        highlightTone?: ('solar' | 'eco' | 'graphite') | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'btcDifference';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1559,7 +1648,9 @@ export interface PagesSelect<T extends boolean = true> {
         btcTestimonialsGrid?: T | BtcTestimonialsGridBlockSelect<T>;
         btcFaqAccordion?: T | BtcFaqAccordionBlockSelect<T>;
         btcCtaBanner?: T | BtcCtaBannerBlockSelect<T>;
-        btcGalleryGrid?: T | BtcGalleryGridBlockSelect<T>;
+        btcGalleryFilter?: T | BtcGalleryFilterBlockSelect<T>;
+        btcGalleryProjects?: T | BtcGalleryProjectsBlockSelect<T>;
+        btcDifference?: T | BtcDifferenceBlockSelect<T>;
         btcContactSection?: T | BtcContactSectionBlockSelect<T>;
         cta?: T | CallToActionBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
@@ -1767,12 +1858,57 @@ export interface BtcCtaBannerBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "BtcGalleryGridBlock_select".
+ * via the `definition` "BtcGalleryFilterBlock_select".
  */
-export interface BtcGalleryGridBlockSelect<T extends boolean = true> {
-  eyebrow?: T;
-  title?: T;
+export interface BtcGalleryFilterBlockSelect<T extends boolean = true> {
+  groupId?: T;
+  sticky?: T;
+  background?: T;
+  filters?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcGalleryProjectsBlock_select".
+ */
+export interface BtcGalleryProjectsBlockSelect<T extends boolean = true> {
+  groupId?: T;
+  background?: T;
   items?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BtcDifferenceBlock_select".
+ */
+export interface BtcDifferenceBlockSelect<T extends boolean = true> {
+  background?: T;
+  eyebrow?: T;
+  heading?: T;
+  intro?: T;
+  columns?: T;
+  cards?:
+    | T
+    | {
+        image?: T;
+        badge?: T;
+        badgeTone?: T;
+        title?: T;
+        description?: T;
+        metaLabel?: T;
+        metaValue?: T;
+        highlight?: T;
+        highlightTone?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -2061,9 +2197,13 @@ export interface FaqsSelect<T extends boolean = true> {
  */
 export interface GalleryItemsSelect<T extends boolean = true> {
   image?: T;
+  title?: T;
   caption?: T;
   category?: T;
+  badgeLabel?: T;
   location?: T;
+  systemSize?: T;
+  layout?: T;
   sort?: T;
   updatedAt?: T;
   createdAt?: T;

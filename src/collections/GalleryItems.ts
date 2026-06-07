@@ -18,7 +18,7 @@ export const GalleryItems: CollectionConfig<'gallery-items'> = {
     update: authenticated,
   },
   admin: {
-    defaultColumns: ['caption', 'category', 'location', 'updatedAt'],
+    defaultColumns: ['title', 'category', 'location', 'sort', 'updatedAt'],
     useAsTitle: 'caption',
   },
   fields: [
@@ -29,9 +29,14 @@ export const GalleryItems: CollectionConfig<'gallery-items'> = {
       required: true,
     },
     {
+      name: 'title',
+      type: 'text',
+      admin: { description: 'Project title shown in the overlay. Falls back to caption when empty.' },
+    },
+    {
       name: 'caption',
       type: 'text',
-      required: true,
+      admin: { description: 'Legacy title field and lightbox subtitle support.' },
     },
     {
       name: 'category',
@@ -44,10 +49,37 @@ export const GalleryItems: CollectionConfig<'gallery-items'> = {
       })),
     },
     {
+      name: 'badgeLabel',
+      type: 'text',
+      admin: {
+        description: 'Optional pill label override, e.g. Detail or Behind the Scenes.',
+      },
+    },
+    {
       name: 'location',
       type: 'text',
       admin: {
-        description: 'Town or label shown in overlays',
+        description: 'Town or label shown in overlays.',
+      },
+    },
+    {
+      name: 'systemSize',
+      type: 'text',
+      admin: {
+        description: 'Optional stat line, e.g. 15 kW System.',
+      },
+    },
+    {
+      name: 'layout',
+      type: 'select',
+      defaultValue: 'normal',
+      options: [
+        { label: 'Normal', value: 'normal' },
+        { label: 'Large (2x2)', value: 'large' },
+      ],
+      admin: {
+        position: 'sidebar',
+        description: 'Large tiles span two columns on desktop.',
       },
     },
     {

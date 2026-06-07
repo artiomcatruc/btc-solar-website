@@ -7,8 +7,10 @@ import { BtcAboutHeroBlockComponent } from '@/blocks/BtcAboutHero/Component'
 import { BtcBenefitsSplitBlockComponent } from '@/blocks/BtcBenefitsSplit/Component'
 import { BtcContactSectionComponent } from '@/blocks/BtcContactSection/Component'
 import { BtcCtaBannerBlockComponent } from '@/blocks/BtcCtaBanner/Component'
+import { BtcDifferenceBlockComponent } from '@/blocks/BtcDifference/Component'
 import { BtcFaqAccordionBlockComponent } from '@/blocks/BtcFaqAccordion/Component'
-import { BtcGalleryGridBlockComponent } from '@/blocks/BtcGalleryGrid/Component'
+import { BtcGalleryFilterBlockComponent } from '@/blocks/BtcGalleryFilter/Component'
+import { BtcGalleryProjectsBlockComponent } from '@/blocks/BtcGalleryProjects/Component'
 import { BtcHeroBlockComponent } from '@/blocks/BtcHero/Component'
 import { BtcProcessStepsBlockComponent } from '@/blocks/BtcProcessSteps/Component'
 import { BtcSectionIntroBlockComponent } from '@/blocks/BtcSectionIntro/Component'
@@ -96,8 +98,18 @@ export async function RenderBlocks({ blocks }: { blocks: Layout }) {
       continue
     }
 
-    if (block.blockType === 'btcGalleryGrid') {
-      addSection(<BtcGalleryGridBlockComponent {...block} />)
+    if (block.blockType === 'btcGalleryFilter') {
+      addSection(<BtcGalleryFilterBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcGalleryProjects') {
+      addSection(<BtcGalleryProjectsBlockComponent {...block} />)
+      continue
+    }
+
+    if (block.blockType === 'btcDifference') {
+      addSection(<BtcDifferenceBlockComponent {...block} />)
       continue
     }
 

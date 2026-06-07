@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { hero } from '@/heros/config'
+import { slugField } from 'payload'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '../../blocks/ArchiveBlock/config'
@@ -7,8 +9,10 @@ import { BtcAboutHero } from '../../blocks/BtcAboutHero/config'
 import { BtcBenefitsSplit } from '../../blocks/BtcBenefitsSplit/config'
 import { BtcContactSection } from '../../blocks/BtcContactSection/config'
 import { BtcCtaBanner } from '../../blocks/BtcCtaBanner/config'
+import { BtcDifference } from '../../blocks/BtcDifference/config'
 import { BtcFaqAccordion } from '../../blocks/BtcFaqAccordion/config'
-import { BtcGalleryGrid } from '../../blocks/BtcGalleryGrid/config'
+import { BtcGalleryFilter } from '../../blocks/BtcGalleryFilter/config'
+import { BtcGalleryProjects } from '../../blocks/BtcGalleryProjects/config'
 import { BtcHero } from '../../blocks/BtcHero/config'
 import { BtcProcessSteps } from '../../blocks/BtcProcessSteps/config'
 import { BtcSectionIntro } from '../../blocks/BtcSectionIntro/config'
@@ -19,8 +23,6 @@ import { CallToAction } from '../../blocks/CallToAction/config'
 import { Content } from '../../blocks/Content/config'
 import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
-import { hero } from '@/heros/config'
-import { slugField } from 'payload'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
@@ -95,7 +97,9 @@ export const Pages: CollectionConfig<'pages'> = {
                 BtcTestimonialsGrid,
                 BtcFaqAccordion,
                 BtcCtaBanner,
-                BtcGalleryGrid,
+                BtcGalleryFilter,
+                BtcGalleryProjects,
+                BtcDifference,
                 BtcContactSection,
                 CallToAction,
                 Content,
