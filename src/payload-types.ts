@@ -2533,7 +2533,32 @@ export interface Site {
   ogImage?: (number | null) | Media;
   phone?: string | null;
   email?: string | null;
+  /**
+   * Optional extra phone numbers shown on the contact page.
+   */
+  phones?:
+    | {
+        number: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional extra email addresses shown on the contact page.
+   */
+  emails?:
+    | {
+        address: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Use line breaks for multi-line addresses.
+   */
   address?: string | null;
+  /**
+   * One line per entry, e.g. Monday - Friday: 9:00 - 18:00
+   */
+  workingHours?: string | null;
   defaultLocale?: ('en' | 'ro' | 'ru') | null;
   socialLinks?:
     | {
@@ -2676,7 +2701,20 @@ export interface SiteSelect<T extends boolean = true> {
   ogImage?: T;
   phone?: T;
   email?: T;
+  phones?:
+    | T
+    | {
+        number?: T;
+        id?: T;
+      };
+  emails?:
+    | T
+    | {
+        address?: T;
+        id?: T;
+      };
   address?: T;
+  workingHours?: T;
   defaultLocale?: T;
   socialLinks?:
     | T
