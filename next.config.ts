@@ -11,7 +11,10 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : process.env.__NEXT_PRIVATE_ORIGIN || 'http://localhost:3000'
 
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL
+
 const nextConfig: NextConfig = {
+  output: 'standalone',
   // Temporarily required on Windows until Next.js fixes Turbopack Sass resolution.
   // See: https://github.com/vercel/next.js/issues/86431
   sassOptions: {
@@ -33,6 +36,15 @@ const nextConfig: NextConfig = {
           protocol: url.protocol.replace(':', '') as 'http' | 'https',
         }
       }),
+      // Cloudflare R2 public URL (custom domain or *.r2.dev)
+      ...(R2_PUBLIC_URL
+        ? [
+            {
+              hostname: new URL(R2_PUBLIC_URL).hostname,
+              protocol: 'https' as const,
+            },
+          ]
+        : []),
     ],
   },
   webpack: (webpackConfig) => {

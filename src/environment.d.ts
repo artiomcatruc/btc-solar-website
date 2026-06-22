@@ -5,6 +5,14 @@ declare global {
       DATABASE_URL: string
       NEXT_PUBLIC_SERVER_URL: string
       VERCEL_PROJECT_PRODUCTION_URL: string
+      CRON_SECRET: string
+      PREVIEW_SECRET: string
+      // Cloudflare R2 — optional, enables cloud media storage when set
+      R2_BUCKET?: string
+      R2_ENDPOINT?: string
+      R2_ACCESS_KEY_ID?: string
+      R2_SECRET_ACCESS_KEY?: string
+      R2_PUBLIC_URL?: string
     }
   }
 }

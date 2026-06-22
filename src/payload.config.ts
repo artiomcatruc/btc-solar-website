@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { s3Storage } from '@payloadcms/storage-s3'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import sharp from 'sharp'
@@ -76,7 +77,29 @@ export default buildConfig({
   collections: [Pages, Posts, Media, Categories, Services, Testimonials, Faqs, GalleryItems, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Site, HomeStats, Header, Footer],
-  plugins,
+  plugins: [
+    ...plugins,
+    // Cloudflare R2 storage — only active when R2 env vars are present (i.e. in production)
+    ...(process.env.R2_BUCKET && process.env.R2_ENDPOINT
+      ? [
+          s3Storage({
+            collections: {
+              media: true,
+            },
+            bucket: process.env.R2_BUCKET,
+            config: {
+              endpoint: process.env.R2_ENDPOINT,
+              credentials: {
+                accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+                secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+              },
+              region: 'auto',
+              forcePathStyle: false,
+            },
+          }),
+        ]
+      : []),
+  ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {
