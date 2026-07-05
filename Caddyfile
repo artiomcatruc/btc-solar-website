@@ -24,6 +24,6 @@ btcsolar.md {
 }
 
 # Redirect www → apex
-www.btcsolar.md {
-    redir https://btcsolar.md{uri} permanent
+www.btcecosystem.md {
+    redir https://btcecosystem.md{uri} permanent
 }
