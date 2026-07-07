@@ -5,7 +5,7 @@ import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import type { Header as HeaderDoc, Site } from '@/payload-types'
 import { cn } from '@/utilities/ui'
@@ -41,10 +41,14 @@ interface Props {
 export const HeaderClient: React.FC<Props> = ({ header, site }) => {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [lastPathname, setLastPathname] = useState(pathname)
 
-  useEffect(() => {
-    setMobileOpen(false)
-  }, [pathname])
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname)
+    if (mobileOpen) {
+      setMobileOpen(false)
+    }
+  }
 
   const navItems = header?.navItems || []
   const headerCta = header?.cta

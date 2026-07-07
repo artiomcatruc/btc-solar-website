@@ -1,13 +1,11 @@
 import { cn } from '@/utilities/ui'
-import React from 'react'
+import React, { createElement } from 'react'
 
 import {
   BTC_ICON_TONE_CLASS,
   BTC_ICON_TONE_DARK_CLASS,
   getBtcIconComponent,
   getBtcIconTone,
-  isBtcIconKey,
-  type BtcIconKey,
   type BtcIconTone,
 } from './registry'
 
@@ -33,10 +31,12 @@ type BtcIconProps = {
 }
 
 /** Renders a lucide glyph from the shared BTC icon registry. */
-export const BtcIcon: React.FC<BtcIconProps> = ({ name, className, strokeWidth = 2 }) => {
-  const Icon = getBtcIconComponent(name)
-  return <Icon aria-hidden className={className} strokeWidth={strokeWidth} />
-}
+export const BtcIcon: React.FC<BtcIconProps> = ({ name, className, strokeWidth = 2 }) =>
+  createElement(getBtcIconComponent(name), {
+    'aria-hidden': true,
+    className,
+    strokeWidth,
+  })
 
 type BtcIconBoxSize = 'sm' | 'md' | 'lg'
 

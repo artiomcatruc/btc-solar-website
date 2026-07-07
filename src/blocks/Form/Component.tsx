@@ -27,11 +27,22 @@ export const FormBlock: React.FC<
     id?: string
   } & FormBlockType
 > = (props) => {
-  const { disableInnerContainer, enableIntro, form: formRelation, introContent } = props
+  const { form: formRelation, ...rest } = props
 
   if (typeof formRelation === 'number') {
     return null
   }
+
+  return <FormBlockInner {...rest} form={formRelation} />
+}
+
+const FormBlockInner: React.FC<
+  {
+    id?: string
+    form: PayloadForm
+  } & Omit<FormBlockType, 'form'>
+> = (props) => {
+  const { disableInnerContainer, enableIntro, form: formRelation, introContent } = props
 
   const formFromProps = formRelation as unknown as FormType
   const {

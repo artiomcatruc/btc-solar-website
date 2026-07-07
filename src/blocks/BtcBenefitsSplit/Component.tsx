@@ -5,7 +5,6 @@ import React from 'react'
 
 import type { BtcBenefitsSplitBlock } from '@/payload-types'
 
-type MediaPosition = NonNullable<BtcBenefitsSplitBlock['mediaPosition']>
 type ListStyle = NonNullable<BtcBenefitsSplitBlock['listStyle']>
 
 type Benefit = NonNullable<BtcBenefitsSplitBlock['benefits']>[number]
