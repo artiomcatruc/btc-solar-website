@@ -14,6 +14,10 @@ import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
 export async function generateStaticParams() {
+  if (process.env.NEXT_BUILD_SKIP_DB === 'true') {
+    return []
+  }
+
   const payload = await getPayload({ config: configPromise })
   const pages = await payload.find({
     collection: 'pages',
