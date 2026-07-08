@@ -1,13 +1,11 @@
 #!/bin/bash
-# ─────────────────────────────────────────────────────────────────────────────
-# VPS initial setup script for BTC Solar website
-# Run as root on a fresh Ubuntu 22.04/24.04 Hetzner VPS:
-#   curl -fsSL https://raw.githubusercontent.com/YOUR_ORG/btc-solar-website/main/scripts/setup-vps.sh | bash
-# ─────────────────────────────────────────────────────────────────────────────
+# VPS initial setup for btc-solar-website (GitHub Actions deploy — no build on VPS)
+# Run as root on fresh Ubuntu 22.04/24.04:
+#   bash scripts/setup-vps.sh
 set -euo pipefail
 
 APP_DIR="/opt/btcsolar"
-DEPLOY_USER="deploy"
+DEPLOY_USER="${DEPLOY_USER:-deploy}"
 
 echo "── [1/6] System update ──────────────────────────────────────"
 apt-get update -qq && apt-get upgrade -y -qq
@@ -19,7 +17,6 @@ if ! command -v docker &>/dev/null; then
   systemctl start docker
 fi
 
-# Add deploy user to docker group so it can run docker without sudo
 getent group docker || groupadd docker
 
 echo "── [3/6] Install Caddy ──────────────────────────────────────"
@@ -41,43 +38,53 @@ if ! id "$DEPLOY_USER" &>/dev/null; then
   mkdir -p /home/$DEPLOY_USER/.ssh
   chmod 700 /home/$DEPLOY_USER/.ssh
   echo ""
-  echo "  ⚠  Paste your GitHub Actions public SSH key below, then press ENTER twice:"
+  echo "  Paste GitHub Actions deploy public key, then press ENTER twice:"
   read -r pubkey
   echo "$pubkey" >> /home/$DEPLOY_USER/.ssh/authorized_keys
   chmod 600 /home/$DEPLOY_USER/.ssh/authorized_keys
   chown -R $DEPLOY_USER:$DEPLOY_USER /home/$DEPLOY_USER/.ssh
 fi
 
-echo "── [5/6] Create app directory ───────────────────────────────"
+echo "── [5/6] App directory ──────────────────────────────────────"
 mkdir -p "$APP_DIR"
 chown "$DEPLOY_USER:$DEPLOY_USER" "$APP_DIR"
 
 echo ""
-echo "  Copy your docker-compose.prod.yml and .env.production to $APP_DIR on the server:"
-echo "  scp docker-compose.prod.yml .env.production $DEPLOY_USER@<SERVER_IP>:$APP_DIR/"
+echo "  Create $APP_DIR/.env (postgres credentials):"
+echo "    POSTGRES_USER=btcsolar"
+echo "    POSTGRES_PASSWORD=<strong-password>"
+echo "    POSTGRES_DB=btcsolar"
+echo "    APP_IMAGE=ghcr.io/artiomcatruc/btc-solar-website:latest"
+echo ""
+echo "  Create $APP_DIR/.env.production (app secrets):"
+echo "    DATABASE_URL=postgres://btcsolar:<password>@postgres:5432/btcsolar"
+echo "    PAYLOAD_SECRET=<secret>"
+echo "    NEXT_PUBLIC_SERVER_URL=https://btcecosystem.md"
+echo "    CRON_SECRET=<secret>"
+echo "    PREVIEW_SECRET=<secret>"
 echo ""
 
-echo "── [6/6] Configure firewall (UFW) ───────────────────────────"
+echo "── [6/6] Firewall ───────────────────────────────────────────"
 apt-get install -y -qq ufw
 ufw --force reset
 ufw default deny incoming
 ufw default allow outgoing
-ufw allow 22/tcp   # SSH
-ufw allow 80/tcp   # HTTP  (Caddy redirects to HTTPS)
-ufw allow 443/tcp  # HTTPS
-ufw allow 443/udp  # HTTP/3 (QUIC)
+ufw allow 22/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw allow 443/udp
 ufw --force enable
-ufw status verbose
 
 echo ""
 echo "─────────────────────────────────────────────────────────────"
-echo " VPS setup complete!"
+echo " VPS setup complete."
 echo ""
-echo " Next steps:"
-echo "  1. Copy Caddyfile to /etc/caddy/Caddyfile"
-echo "  2. Replace 'btcsolar.md' in Caddyfile with your real domain"
-echo "  3. systemctl reload caddy"
-echo "  4. Copy docker-compose.prod.yml + .env.production to $APP_DIR"
-echo "  5. Add GitHub Secrets: SSH_HOST, SSH_USER=deploy, SSH_PRIVATE_KEY"
-echo "  6. Push to main → GitHub Actions will deploy automatically"
+echo " Next:"
+echo "  1. cp Caddyfile /etc/caddy/Caddyfile && systemctl reload caddy"
+echo "  2. Put .env + .env.production in $APP_DIR"
+echo "  3. GitHub Secrets: SSH_HOST, SSH_USER, SSH_PRIVATE_KEY,"
+echo "     PAYLOAD_SECRET, NEXT_PUBLIC_SERVER_URL"
+echo "  4. If GHCR package is private, add GHCR_PAT (read:packages)"
+echo "     OR make package public: github.com/artiomcatruc?tab=packages"
+echo "  5. Push to main → GHA builds image, VPS only pull + migrate"
 echo "─────────────────────────────────────────────────────────────"

@@ -1,5 +1,4 @@
-# Replace btcsolar.md with your actual domain
-btcsolar.md {
+btcecosystem.md {
     reverse_proxy localhost:3000
 
     # Gzip compression

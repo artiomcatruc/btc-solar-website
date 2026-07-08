@@ -10,7 +10,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc ./
 RUN corepack enable \
   && corepack prepare pnpm@10.34.4 --activate \
   && pnpm i --frozen-lockfile
@@ -26,18 +26,15 @@ ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
 # Skip DB-dependent static generation — postgres host is unavailable during CI Docker build
 ENV NEXT_BUILD_SKIP_DB=true
+ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
-
 RUN corepack enable \
   && corepack prepare pnpm@10.34.4 --activate \
-  && pnpm run build
+  && pnpm exec next build --webpack \
+  && pnpm exec next-sitemap --config next-sitemap.config.cjs
 
 # Production image, copy all the files and run next
 FROM base AS runner

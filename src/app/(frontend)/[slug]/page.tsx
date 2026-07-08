@@ -13,6 +13,8 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   if (process.env.NEXT_BUILD_SKIP_DB === 'true') {
     return []

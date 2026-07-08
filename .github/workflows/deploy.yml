@@ -3,11 +3,11 @@ name: Deploy to production
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
-  # lowercased: ghcr.io/username/btc-solar-website
-  IMAGE_NAME: ${{ github.repository_owner }}/btc-solar-website
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push:
@@ -52,7 +52,6 @@ jobs:
           build-args: |
             PAYLOAD_SECRET=${{ secrets.PAYLOAD_SECRET }}
             NEXT_PUBLIC_SERVER_URL=${{ secrets.NEXT_PUBLIC_SERVER_URL }}
-          # Cache layers in GHCR for faster subsequent builds
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
 
@@ -63,25 +62,52 @@ jobs:
     environment: production
 
     steps:
-      - name: Run migrations then restart app
-        uses: appleboy/ssh-action@v1
+      - uses: actions/checkout@v4
+
+      - name: Sync docker-compose.prod.yml to VPS
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: docker-compose.prod.yml
+          target: /opt/btcsolar
+
+      - name: Pull image, migrate, restart
+        uses: appleboy/ssh-action@v1
+        env:
+          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+          GHCR_USER: ${{ github.repository_owner }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: GHCR_PAT,GHCR_USER
           script: |
-            set -e
+            set -euo pipefail
             cd /opt/btcsolar
 
-            # Pull the new image
-            docker compose -f docker-compose.prod.yml pull app
+            COMPOSE="docker compose -f docker-compose.prod.yml"
 
-            # Run DB migrations in a one-off container before switching traffic
-            docker compose -f docker-compose.prod.yml run --rm --no-deps app \
+            if [ -n "${GHCR_PAT:-}" ]; then
+              echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            fi
+
+            $COMPOSE up -d postgres
+
+            echo "Waiting for postgres..."
+            for i in $(seq 1 30); do
+              if $COMPOSE exec -T postgres pg_isready -U btcsolar >/dev/null 2>&1; then
+                break
+              fi
+              sleep 2
+            done
+
+            $COMPOSE pull app
+
+            $COMPOSE run --rm --no-deps app \
               node ./node_modules/.bin/payload migrate
 
-            # Start / restart the app with the new image
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            $COMPOSE up -d --remove-orphans
 
-            # Clean up old dangling images
             docker image prune -f

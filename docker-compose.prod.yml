@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${APP_IMAGE:-ghcr.io/REPLACE_GITHUB_USERNAME/btc-solar-website:latest}
+    image: ${APP_IMAGE:-ghcr.io/artiomcatruc/btc-solar-website:latest}
     restart: unless-stopped
     # Only bind to localhost — Caddy handles the public HTTPS
     ports:

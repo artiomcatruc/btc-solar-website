@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+.next
+.env
+.env.*
+.deploy.env
+tests
+test-results
+playwright-report
+blob-report
+.agents
+*.md
+tsconfig.tsbuildinfo
+.DS_Store
