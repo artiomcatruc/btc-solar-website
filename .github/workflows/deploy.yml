@@ -106,7 +106,7 @@ jobs:
             $COMPOSE pull app
 
             $COMPOSE run --rm --no-deps app \
-              NODE_OPTIONS=--no-deprecation node ./node_modules/payload/bin.js migrate
+              sh -c 'NODE_OPTIONS=--no-deprecation node ./node_modules/payload/bin.js migrate'
 
             $COMPOSE up -d --remove-orphans
 
