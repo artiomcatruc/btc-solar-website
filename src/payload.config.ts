@@ -80,11 +80,19 @@ export default buildConfig({
   plugins: [
     ...plugins,
     // Cloudflare R2 storage — only active when R2 env vars are present (i.e. in production)
-    ...(process.env.R2_BUCKET && process.env.R2_ENDPOINT
+    ...(process.env.R2_BUCKET && process.env.R2_ENDPOINT && process.env.R2_PUBLIC_URL
       ? [
           s3Storage({
             collections: {
-              media: true,
+              media: {
+                // Serve files directly from the public R2 domain (not via Payload proxy)
+                disablePayloadAccessControl: true,
+                generateFileURL: ({ filename, prefix }) => {
+                  const base = process.env.R2_PUBLIC_URL!.replace(/\/$/, '')
+                  const key = [prefix, filename].filter(Boolean).join('/')
+                  return `${base}/${key}`
+                },
+              },
             },
             bucket: process.env.R2_BUCKET,
             config: {
@@ -94,7 +102,7 @@ export default buildConfig({
                 secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
               },
               region: 'auto',
-              forcePathStyle: false,
+              forcePathStyle: true,
             },
           }),
         ]
