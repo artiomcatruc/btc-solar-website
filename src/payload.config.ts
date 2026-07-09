@@ -18,6 +18,7 @@ import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { HomeStats } from './HomeStats/config'
+import { migrations } from './migrations'
 import { plugins } from './plugins'
 import { Site } from './Site/config'
 import { getServerSideURL } from './utilities/getURL'
@@ -65,9 +66,8 @@ export default buildConfig({
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URL || '',
-    },
+    pool: { connectionString: process.env.DATABASE_URL || '' },
+    prodMigrations: migrations,
   }),
   localization: {
     locales: ['en', 'ru', 'ro'],
