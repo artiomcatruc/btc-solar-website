@@ -26,3 +26,25 @@ btcecosystem.md {
 www.btcecosystem.md {
     redir https://btcecosystem.md{uri} permanent
 }
+
+unrealware.com {
+    root * /var/www/unrealware
+    encode gzip zstd
+
+    @assets path /assets/*
+    header @assets Cache-Control "public, max-age=31536000, immutable"
+
+    file_server
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options nosniff
+        X-Frame-Options SAMEORIGIN
+        Referrer-Policy strict-origin-when-cross-origin
+        -Server
+    }
+}
+
+www.unrealware.com {
+    redir https://unrealware.com{uri} permanent
+}
