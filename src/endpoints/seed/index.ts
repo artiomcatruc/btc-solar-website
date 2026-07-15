@@ -16,6 +16,7 @@ const collections: CollectionSlug[] = [
   'testimonials',
   'faqs',
   'categories',
+  'tags',
   'media',
   'pages',
   'posts',
@@ -25,6 +26,7 @@ const collections: CollectionSlug[] = [
 ]
 
 const categories = ['Technology', 'News', 'Finance', 'Design', 'Software', 'Engineering']
+const tags = ['Solar', 'Mining', 'Efficiency', 'ROI', 'Installation']
 
 // Next.js revalidation errors are normal when seeding the database without a server running
 // i.e. running `yarn seed` locally instead of using the admin UI within an active app
@@ -85,18 +87,6 @@ export const seed = async ({
       .map((collection) => payload.db.deleteVersions({ collection, req, where: {} })),
   )
 
-  payload.logger.info(`— Seeding demo author and user...`)
-
-  await payload.delete({
-    collection: 'users',
-    depth: 0,
-    where: {
-      email: {
-        equals: 'demo-author@example.com',
-      },
-    },
-  })
-
   payload.logger.info(`— Seeding media...`)
 
   const [image1Buffer, image2Buffer, image3Buffer, hero1Buffer] = await Promise.all([
@@ -114,15 +104,7 @@ export const seed = async ({
     ),
   ])
 
-  const [demoAuthor, image1Doc, image2Doc, image3Doc, imageHomeDoc] = await Promise.all([
-    payload.create({
-      collection: 'users',
-      data: {
-        name: 'Demo Author',
-        email: 'demo-author@example.com',
-        password: 'password',
-      },
-    }),
+  const [image1Doc, image2Doc, image3Doc, imageHomeDoc, , tagDocs] = await Promise.all([
     payload.create({
       collection: 'media',
       data: image1,
@@ -143,14 +125,27 @@ export const seed = async ({
       data: imageHero1,
       file: hero1Buffer,
     }),
-    categories.map((category) =>
-      payload.create({
-        collection: 'categories',
-        data: {
-          title: category,
-          slug: category,
-        },
-      }),
+    Promise.all(
+      categories.map((category) =>
+        payload.create({
+          collection: 'categories',
+          data: {
+            title: category,
+            slug: category,
+          },
+        }),
+      ),
+    ),
+    Promise.all(
+      tags.map((tag) =>
+        payload.create({
+          collection: 'tags',
+          data: {
+            title: tag,
+            slug: tag.toLowerCase(),
+          },
+        }),
+      ),
     ),
   ])
 
@@ -164,7 +159,10 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post1({ heroImage: image1Doc, blockImage: image2Doc, author: demoAuthor }),
+    data: {
+      ...post1({ heroImage: image1Doc, blockImage: image2Doc }),
+      tags: [tagDocs[0]!.id, tagDocs[1]!.id],
+    },
   })
 
   const post2Doc = await payload.create({
@@ -173,7 +171,10 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post2({ heroImage: image2Doc, blockImage: image3Doc, author: demoAuthor }),
+    data: {
+      ...post2({ heroImage: image2Doc, blockImage: image3Doc }),
+      tags: [tagDocs[2]!.id, tagDocs[3]!.id],
+    },
   })
 
   const post3Doc = await payload.create({
@@ -182,7 +183,10 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post3({ heroImage: image3Doc, blockImage: image1Doc, author: demoAuthor }),
+    data: {
+      ...post3({ heroImage: image3Doc, blockImage: image1Doc }),
+      tags: [tagDocs[0]!.id, tagDocs[4]!.id],
+    },
   })
 
   // update each post with related posts

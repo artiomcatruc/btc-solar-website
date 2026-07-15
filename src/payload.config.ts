@@ -13,6 +13,7 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Services } from './collections/Services'
+import { Tags } from './collections/Tags'
 import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
@@ -74,7 +75,18 @@ export default buildConfig({
     defaultLocale: 'en',
     fallback: true,
   },
-  collections: [Pages, Posts, Media, Categories, Services, Testimonials, Faqs, GalleryItems, Users],
+  collections: [
+    Pages,
+    Posts,
+    Media,
+    Categories,
+    Tags,
+    Services,
+    Testimonials,
+    Faqs,
+    GalleryItems,
+    Users,
+  ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Site, HomeStats, Header, Footer],
   plugins: [

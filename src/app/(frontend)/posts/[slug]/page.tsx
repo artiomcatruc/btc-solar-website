@@ -7,6 +7,7 @@ import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import RichText from '@/components/RichText'
+import Link from 'next/link'
 
 import type { Post } from '@/payload-types'
 
@@ -34,11 +35,9 @@ export async function generateStaticParams() {
     },
   })
 
-  const params = posts.docs.map(({ slug }) => {
+  return posts.docs.map(({ slug }) => {
     return { slug }
   })
-
-  return params
 }
 
 type Args = {
@@ -50,7 +49,6 @@ type Args = {
 export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug = '' } = await paramsPromise
-  // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const url = '/posts/' + decodedSlug
   const post = await queryPostBySlug({ slug: decodedSlug })
@@ -58,26 +56,37 @@ export default async function Post({ params: paramsPromise }: Args) {
   if (!post) return <PayloadRedirects url={url} />
 
   return (
-    <article className="pt-16 pb-16">
+    <article className="bg-white pb-24">
       <PageClient />
-
-      {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
-
       {draft && <LivePreviewListener />}
 
       <PostHero post={post} />
 
-      <div className="flex flex-col items-center gap-4 pt-8">
-        <div className="container">
-          <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
-          {post.relatedPosts && post.relatedPosts.length > 0 && (
-            <RelatedPosts
-              className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-              docs={post.relatedPosts.filter((post): post is Post => typeof post === 'object')}
-            />
-          )}
+      <div className="mx-auto max-w-7xl px-4 pt-12 sm:px-6 lg:px-8">
+        <div className="mb-10">
+          <Link
+            href="/posts"
+            className="inline-flex items-center gap-2 text-sm font-medium text-graphite-600 transition-colors hover:text-solar-600"
+          >
+            <span aria-hidden>←</span> Back to blog
+          </Link>
         </div>
+
+        <RichText
+          className="prose prose-lg mx-auto max-w-[48rem] prose-headings:font-bold prose-headings:text-graphite-900 prose-p:text-graphite-600 prose-a:text-solar-600"
+          data={post.content}
+          enableGutter={false}
+        />
+
+        {post.relatedPosts && post.relatedPosts.length > 0 ? (
+          <div className="mx-auto mt-20 max-w-[52rem]">
+            <h2 className="mb-8 text-2xl font-bold text-graphite-900 md:text-3xl">Related articles</h2>
+            <RelatedPosts
+              docs={post.relatedPosts.filter((related): related is Post => typeof related === 'object')}
+            />
+          </div>
+        ) : null}
       </div>
     </article>
   )
@@ -85,7 +94,6 @@ export default async function Post({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const post = await queryPostBySlug({ slug: decodedSlug })
 
