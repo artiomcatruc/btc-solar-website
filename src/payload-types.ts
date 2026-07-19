@@ -1114,7 +1114,7 @@ export interface Form {
     url: string;
   };
   /**
-   * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
+   * Email notifications are disabled. Check Leads in the admin dashboard instead.
    */
   emails?:
     | {
@@ -1369,12 +1369,27 @@ export interface Redirect {
   createdAt: string;
 }
 /**
+ * Contact form requests. Mark as Reviewed after you handle them.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
   id: number;
+  /**
+   * Mark Reviewed once you have contacted the lead.
+   */
+  status: 'new' | 'reviewed';
+  name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  projectType?: string | null;
+  location?: string | null;
+  message?: string | null;
   form: number | Form;
+  /**
+   * Raw field/value pairs from the form. Prefer the summary fields above.
+   */
   submissionData?:
     | {
         field: string;
@@ -2417,6 +2432,13 @@ export interface FormsSelect<T extends boolean = true> {
  * via the `definition` "form-submissions_select".
  */
 export interface FormSubmissionsSelect<T extends boolean = true> {
+  status?: T;
+  name?: T;
+  phone?: T;
+  email?: T;
+  projectType?: T;
+  location?: T;
+  message?: T;
   form?: T;
   submissionData?:
     | T

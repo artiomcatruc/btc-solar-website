@@ -10,6 +10,7 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
+import { formSubmissionOverrides } from '@/form-submissions/overrides'
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 
@@ -59,8 +60,20 @@ export const plugins: Plugin[] = [
       payment: false,
     },
     formOverrides: {
+      // @ts-expect-error - mapped field admin overrides don't narrow cleanly
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
+          if ('name' in field && field.name === 'emails') {
+            return {
+              ...field,
+              admin: {
+                ...field.admin,
+                hidden: true,
+                description:
+                  'Email notifications are disabled. Check Leads in the admin dashboard instead.',
+              },
+            }
+          }
           if ('name' in field && field.name === 'confirmationMessage') {
             return {
               ...field,
@@ -79,6 +92,7 @@ export const plugins: Plugin[] = [
         })
       },
     },
+    formSubmissionOverrides,
   }),
   searchPlugin({
     collections: ['posts'],
