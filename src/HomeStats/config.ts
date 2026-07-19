@@ -21,12 +21,14 @@ export const HomeStats: GlobalConfig = {
             {
               name: 'value',
               type: 'text',
+              localized: true,
               required: true,
               admin: { width: '50%', description: 'e.g. 500+, 10MW, 98% — suffix in solar accent' },
             },
             {
               name: 'label',
               type: 'text',
+              localized: true,
               required: true,
               admin: { width: '50%', description: 'e.g. Projects Completed' },
             },

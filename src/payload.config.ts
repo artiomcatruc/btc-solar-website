@@ -68,6 +68,9 @@ export default buildConfig({
   editor: defaultLexical,
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URL || '' },
+    // Never auto-push — localization moves columns into *_locales; push would drop data.
+    // Apply schema via `pnpm payload migrate` only.
+    push: false,
     prodMigrations: migrations,
   }),
   localization: {

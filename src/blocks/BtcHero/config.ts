@@ -10,6 +10,7 @@ export const BtcHero: Block = {
     {
       name: 'badge',
       type: 'text',
+      localized: true,
       admin: { description: 'Pill above the headline.' },
     },
     {
@@ -18,12 +19,14 @@ export const BtcHero: Block = {
         {
           name: 'headline',
           type: 'text',
+          localized: true,
           required: true,
           admin: { width: '50%' },
         },
         {
           name: 'headlineAccent',
           type: 'text',
+          localized: true,
           admin: { width: '50%', description: 'Gradient line (second line).' },
         },
       ],
@@ -31,6 +34,7 @@ export const BtcHero: Block = {
     {
       name: 'description',
       type: 'textarea',
+      localized: true,
     },
     {
       name: 'background',

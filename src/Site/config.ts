@@ -12,16 +12,19 @@ export const Site: GlobalConfig = {
     {
       name: 'siteName',
       type: 'text',
+      localized: true,
       defaultValue: 'BTC Solar',
     },
     {
       name: 'defaultTitle',
       type: 'text',
+      localized: true,
       admin: { description: 'Fallback document title when a page omits SEO title.' },
     },
     {
       name: 'defaultDescription',
       type: 'textarea',
+      localized: true,
     },
     {
       name: 'ogImage',
@@ -68,6 +71,7 @@ export const Site: GlobalConfig = {
     {
       name: 'address',
       type: 'textarea',
+      localized: true,
       admin: {
         description: 'Use line breaks for multi-line addresses.',
       },
@@ -75,6 +79,7 @@ export const Site: GlobalConfig = {
     {
       name: 'workingHours',
       type: 'textarea',
+      localized: true,
       admin: {
         description: 'One line per entry, e.g. Monday - Friday: 9:00 - 18:00',
       },
@@ -99,6 +104,7 @@ export const Site: GlobalConfig = {
             {
               name: 'label',
               type: 'text',
+              localized: true,
               admin: { width: '50%' },
               required: true,
             },

@@ -6,6 +6,7 @@ import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
+import { getRequestLocale } from '@/utilities/getRequestLocale'
 import { buildPostsHref } from '@/utilities/postsQuery'
 
 type BadgeTone = 'solar' | 'eco' | 'graphite'
@@ -21,7 +22,8 @@ const isTone = (value?: string | null): value is BadgeTone =>
 
 export const PostHero: React.FC<{
   post: Post
-}> = ({ post }) => {
+}> = async ({ post }) => {
+  const locale = await getRequestLocale()
   const { categories, tags, heroImage, publishedAt, title } = post
 
   const categoryList =
@@ -57,7 +59,10 @@ export const PostHero: React.FC<{
                 return (
                   <Link
                     key={category.id}
-                    href={buildPostsHref({ category: category.slug ?? undefined })}
+                    href={buildPostsHref({
+                      category: category.slug ?? undefined,
+                      locale,
+                    })}
                     className={cn(
                       'rounded-full px-4 py-1.5 text-sm font-semibold transition-opacity hover:opacity-90',
                       badgeToneClass[tone],
@@ -85,7 +90,7 @@ export const PostHero: React.FC<{
                 {tagList.map((tag) => (
                   <Link
                     key={tag.id}
-                    href={buildPostsHref({ tag: tag.slug ?? undefined })}
+                    href={buildPostsHref({ tag: tag.slug ?? undefined, locale })}
                     className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20"
                   >
                     #{tag.title}

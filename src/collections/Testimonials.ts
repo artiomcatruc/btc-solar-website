@@ -23,16 +23,19 @@ export const Testimonials: CollectionConfig<'testimonials'> = {
     {
       name: 'quote',
       type: 'textarea',
+      localized: true,
       required: true,
     },
     {
       name: 'name',
       type: 'text',
+      localized: true,
       required: true,
     },
     {
       name: 'subtitle',
       type: 'text',
+      localized: true,
       admin: {
         description: 'e.g. Role, City',
       },

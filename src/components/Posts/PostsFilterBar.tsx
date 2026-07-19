@@ -1,8 +1,9 @@
 'use client'
 
 import { buildPostsHref } from '@/utilities/postsQuery'
+import { defaultLocale, getLocaleFromPathname } from '@/utilities/locale'
 import { cn } from '@/utilities/ui'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useState, useTransition } from 'react'
 
 export type FilterOption = {
@@ -45,6 +46,8 @@ export const PostsFilterBar: React.FC<Props> = ({
   activeQuery = '',
 }) => {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname) || defaultLocale
   const [isPending, startTransition] = useTransition()
   const [query, setQuery] = useState(activeQuery)
 
@@ -59,6 +62,7 @@ export const PostsFilterBar: React.FC<Props> = ({
           category: next.category,
           tag: next.tag,
           q: next.q,
+          locale,
         }),
       )
     })

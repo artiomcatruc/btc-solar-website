@@ -29,11 +29,13 @@ export const GalleryItems: CollectionConfig<'gallery-items'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       admin: { description: 'Project title shown in the overlay. Falls back to caption when empty.' },
     },
     {
       name: 'caption',
       type: 'text',
+      localized: true,
       admin: { description: 'Legacy title field and lightbox subtitle support.' },
     },
     {
@@ -48,6 +50,7 @@ export const GalleryItems: CollectionConfig<'gallery-items'> = {
     {
       name: 'badgeLabel',
       type: 'text',
+      localized: true,
       admin: {
         description: 'Optional pill label override. Defaults to the category title.',
       },
@@ -55,6 +58,7 @@ export const GalleryItems: CollectionConfig<'gallery-items'> = {
     {
       name: 'location',
       type: 'text',
+      localized: true,
       admin: {
         description: 'Town or label shown in overlays.',
       },
@@ -62,6 +66,7 @@ export const GalleryItems: CollectionConfig<'gallery-items'> = {
     {
       name: 'systemSize',
       type: 'text',
+      localized: true,
       admin: {
         description: 'Optional stat line, e.g. 15 kW System.',
       },

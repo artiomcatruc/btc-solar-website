@@ -5,6 +5,7 @@ import { PageRange } from '@/components/PageRange'
 import { Pagination } from '@/components/Pagination'
 import { PostsFilterBar } from '@/components/Posts/PostsFilterBar'
 import { buildPostsWhere, POSTS_PER_PAGE } from '@/utilities/postsQuery'
+import { parseLocale } from '@/utilities/locale'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
@@ -14,15 +15,23 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 600
 
 type Args = {
+  params: Promise<{
+    locale?: string
+  }>
   searchParams: Promise<{
     category?: string
     tag?: string
-    q?: string
     page?: string
+    q?: string
   }>
 }
 
-export default async function Page({ searchParams: searchParamsPromise }: Args) {
+export default async function Page({
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
+}: Args) {
+  const { locale: localeParam } = await paramsPromise
+  const locale = parseLocale(localeParam)
   const searchParams = await searchParamsPromise
   const category = searchParams.category || undefined
   const tag = searchParams.tag || undefined
@@ -36,6 +45,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       collection: 'posts',
       depth: 1,
       limit: POSTS_PER_PAGE,
+      locale,
       page,
       overrideAccess: false,
       where: buildPostsWhere({ category, tag, q }),
@@ -54,6 +64,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       collection: 'categories',
       depth: 0,
       limit: 100,
+      locale,
       pagination: false,
       overrideAccess: false,
       select: {
@@ -66,6 +77,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       collection: 'tags',
       depth: 0,
       limit: 100,
+      locale,
       pagination: false,
       overrideAccess: false,
       select: {

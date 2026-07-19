@@ -9,7 +9,7 @@ import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { AdminBar } from '@/components/AdminBar'
 import { Providers } from '@/providers'
-import { getCachedSite } from '@/utilities/getSite'
+import { getRequestLocale } from '@/utilities/getRequestLocale'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
@@ -17,19 +17,17 @@ import { getServerSideURL } from '@/utilities/getURL'
 import './globals.css'
 
 const inter = Inter({
-  subsets: ['latin', 'latin-ext'],
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
   display: 'swap',
   variable: '--font-inter',
 })
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
-  const site = await getCachedSite()
-  const htmlLang =
-    site?.defaultLocale === 'ru' || site?.defaultLocale === 'ro' ? site.defaultLocale : 'en'
+  const locale = await getRequestLocale()
 
   return (
-    <html className={cn(inter.variable, GeistMono.variable, 'scroll-smooth')} lang={htmlLang}>
+    <html className={cn(inter.variable, GeistMono.variable, 'scroll-smooth')} lang={locale}>
       <head>
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
@@ -42,9 +40,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             }}
           />
 
-          <Header />
+          <Header locale={locale} />
           {children}
-          <Footer />
+          <Footer locale={locale} />
         </Providers>
       </body>
     </html>

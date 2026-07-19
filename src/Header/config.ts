@@ -20,6 +20,7 @@ export const Header: GlobalConfig = {
     {
       name: 'tagline',
       type: 'text',
+      localized: true,
       admin: {
         description: 'Beside logo; if empty, Site siteName is shown.',
       },

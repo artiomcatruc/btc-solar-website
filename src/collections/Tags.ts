@@ -20,6 +20,7 @@ export const Tags: CollectionConfig = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
     },
     slugField({

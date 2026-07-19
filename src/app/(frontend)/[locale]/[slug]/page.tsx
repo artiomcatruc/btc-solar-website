@@ -11,6 +11,7 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { locales, parseLocale, type Locale } from '@/utilities/locale'
 import PageClient from './page.client'
 
 export const dynamic = 'force-dynamic'
@@ -32,42 +33,40 @@ export async function generateStaticParams() {
     },
   })
 
-  const params = pages.docs
-    ?.filter((doc) => {
-      return doc.slug !== 'index'
-    })
-    .map(({ slug }) => {
-      return { slug }
-    })
+  const slugs =
+    pages.docs
+      ?.filter((doc) => doc.slug && doc.slug !== 'home' && doc.slug !== 'index')
+      .map((doc) => doc.slug as string) || []
 
-  return params
+  return locales.flatMap((locale) => slugs.map((slug) => ({ locale, slug })))
 }
 
 type Args = {
   params: Promise<{
+    locale?: string
     slug?: string
   }>
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = 'index' } = await paramsPromise
-  // Decode to support slugs with special characters
+  const { locale: localeParam, slug = 'home' } = await paramsPromise
+  const locale = parseLocale(localeParam)
   const decodedSlug = decodeURIComponent(slug)
-  const url = '/' + decodedSlug
+  const url = `/${locale}${decodedSlug === 'home' || decodedSlug === 'index' ? '' : `/${decodedSlug}`}`
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
   page = await queryPageBySlug({
+    locale,
     slug: decodedSlug,
   })
 
-  // Remove this code once your website is seeded
-  if (!page && slug === 'index') {
+  if (!page && (decodedSlug === 'home' || decodedSlug === 'index')) {
     page = homeStatic
   }
 
   if (!page) {
-    return <PayloadRedirects url={url} />
+    return <PayloadRedirects locale={locale} url={url} />
   }
 
   const { hero, layout } = page
@@ -79,47 +78,54 @@ export default async function Page({ params: paramsPromise }: Args) {
   return (
     <article>
       <PageClient />
-      {/* Allows redirects for valid pages too */}
-      <PayloadRedirects disableNotFound url={url} />
+      <PayloadRedirects disableNotFound locale={locale} url={url} />
 
       {draft && <LivePreviewListener />}
 
       {!usesBtcHero && <RenderHero {...hero} />}
-      {/* When the first BTC hero block is responsible for masthead visuals we skip Payload hero to avoid duplication. */}
       <RenderBlocks blocks={layout} />
     </article>
   )
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = 'index' } = await paramsPromise
-  // Decode to support slugs with special characters
+  const { locale: localeParam, slug = 'home' } = await paramsPromise
+  const locale = parseLocale(localeParam)
   const decodedSlug = decodeURIComponent(slug)
   const page = await queryPageBySlug({
+    locale,
     slug: decodedSlug,
   })
 
   return generateMeta({ doc: page })
 }
 
-const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
+const queryPageBySlug = cache(async ({ locale, slug }: { locale: Locale; slug: string }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
 
-  const result = await payload.find({
-    collection: 'pages',
-    draft,
-    limit: 1,
-    depth: 3,
-    pagination: false,
-    overrideAccess: draft,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
+  const trySlugs =
+    slug === 'home' || slug === 'index' ? (['home', 'index'] as const) : ([slug] as const)
 
-  return result.docs?.[0] || null
+  for (const candidate of trySlugs) {
+    const result = await payload.find({
+      collection: 'pages',
+      draft,
+      limit: 1,
+      depth: 3,
+      locale,
+      pagination: false,
+      overrideAccess: draft,
+      where: {
+        slug: {
+          equals: candidate,
+        },
+      },
+    })
+
+    if (result.docs?.[0]) return result.docs[0]
+  }
+
+  return null
 })

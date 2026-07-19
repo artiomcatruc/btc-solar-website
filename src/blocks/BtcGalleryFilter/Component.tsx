@@ -1,5 +1,6 @@
 import configPromise from '@payload-config'
 import { cn } from '@/utilities/ui'
+import { getRequestLocale } from '@/utilities/getRequestLocale'
 import { getPayload } from 'payload'
 import React from 'react'
 
@@ -21,6 +22,7 @@ const resolveCategories = async (
   selected?: (number | Category)[] | null,
 ): Promise<Category[]> => {
   const payload = await getPayload({ config: configPromise })
+  const locale = await getRequestLocale()
   const picked = (selected ?? []).filter(isCategory)
 
   if (picked.length) return picked
@@ -32,6 +34,7 @@ const resolveCategories = async (
       collection: 'categories',
       where: { id: { in: ids } },
       limit: ids.length,
+      locale,
       pagination: false,
     })
     const byId = new Map(result.docs.map((doc) => [doc.id, doc]))
@@ -42,6 +45,7 @@ const resolveCategories = async (
   const result = await payload.find({
     collection: 'categories',
     limit: 100,
+    locale,
     pagination: false,
     sort: 'title',
   })

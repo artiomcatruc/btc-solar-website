@@ -13,16 +13,19 @@ export const BtcSectionIntro: Block = {
     {
       name: 'eyebrow',
       type: 'text',
+      localized: true,
       admin: { description: 'Uppercase label in solar accent.' },
     },
     {
       name: 'heading',
       type: 'text',
+      localized: true,
       required: true,
     },
     {
       name: 'lead',
       type: 'textarea',
+      localized: true,
       admin: {
         description:
           'Single paragraph for compact layout. Separate paragraphs with a blank line for the multi-paragraph story layout.',

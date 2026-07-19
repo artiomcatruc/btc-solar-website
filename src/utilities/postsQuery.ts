@@ -40,7 +40,13 @@ export const buildPostsWhere = ({ category, tag, q }: PostsFilterParams): Where 
   return { and }
 }
 
-export const buildPostsHref = ({ category, tag, q, page }: PostsFilterParams): string => {
+export const buildPostsHref = ({
+  category,
+  tag,
+  q,
+  page,
+  locale,
+}: PostsFilterParams & { locale?: string }): string => {
   const params = new URLSearchParams()
 
   if (category) params.set('category', category)
@@ -48,6 +54,7 @@ export const buildPostsHref = ({ category, tag, q, page }: PostsFilterParams): s
   if (q?.trim()) params.set('q', q.trim())
   if (page && page > 1) params.set('page', String(page))
 
+  const prefix = locale ? `/${locale}/posts` : '/posts'
   const query = params.toString()
-  return query ? `/posts?${query}` : '/posts'
+  return query ? `${prefix}?${query}` : prefix
 }

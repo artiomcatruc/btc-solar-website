@@ -14,6 +14,7 @@ export const BtcAboutHero: Block = {
     {
       name: 'eyebrow',
       type: 'text',
+      localized: true,
       defaultValue: 'About BTC Solar',
       admin: { description: 'Uppercase label above the headline.' },
     },
@@ -23,6 +24,7 @@ export const BtcAboutHero: Block = {
         {
           name: 'headline',
           type: 'text',
+          localized: true,
           required: true,
           defaultValue: "Powering Moldova's",
           admin: { width: '50%' },
@@ -30,6 +32,7 @@ export const BtcAboutHero: Block = {
         {
           name: 'headlineAccent',
           type: 'text',
+          localized: true,
           defaultValue: 'Sustainable Future',
           admin: {
             width: '50%',
@@ -41,6 +44,7 @@ export const BtcAboutHero: Block = {
     {
       name: 'lead',
       type: 'textarea',
+      localized: true,
       defaultValue:
         "We are Moldova's trusted leader in solar energy solutions, committed to making clean energy accessible, affordable, and efficient for every home and business.",
     },
@@ -64,11 +68,13 @@ export const BtcAboutHero: Block = {
         {
           name: 'value',
           type: 'text',
+          localized: true,
           required: true,
         },
         {
           name: 'label',
           type: 'text',
+          localized: true,
           required: true,
         },
       ],
@@ -85,12 +91,14 @@ export const BtcAboutHero: Block = {
         {
           name: 'cardTitle',
           type: 'text',
+          localized: true,
           defaultValue: '10 MW',
           admin: { width: '50%', description: 'Floating badge title on the image.' },
         },
         {
           name: 'cardSubtitle',
           type: 'text',
+          localized: true,
           defaultValue: 'Installed Capacity',
           admin: { width: '50%', description: 'Badge subtitle line.' },
         },

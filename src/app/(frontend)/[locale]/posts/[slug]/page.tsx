@@ -13,6 +13,7 @@ import type { Post } from '@/payload-types'
 
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { locales, localizeHref, parseLocale, type Locale } from '@/utilities/locale'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
@@ -35,30 +36,35 @@ export async function generateStaticParams() {
     },
   })
 
-  return posts.docs.map(({ slug }) => {
-    return { slug }
-  })
+  return locales.flatMap((locale) =>
+    posts.docs.map(({ slug }) => ({
+      locale,
+      slug,
+    })),
+  )
 }
 
 type Args = {
   params: Promise<{
+    locale?: string
     slug?: string
   }>
 }
 
 export default async function Post({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = '' } = await paramsPromise
+  const { locale: localeParam, slug = '' } = await paramsPromise
+  const locale = parseLocale(localeParam)
   const decodedSlug = decodeURIComponent(slug)
-  const url = '/posts/' + decodedSlug
-  const post = await queryPostBySlug({ slug: decodedSlug })
+  const url = `/${locale}/posts/${decodedSlug}`
+  const post = await queryPostBySlug({ locale, slug: decodedSlug })
 
-  if (!post) return <PayloadRedirects url={url} />
+  if (!post) return <PayloadRedirects locale={locale} url={url} />
 
   return (
     <article className="bg-white pb-24">
       <PageClient />
-      <PayloadRedirects disableNotFound url={url} />
+      <PayloadRedirects disableNotFound locale={locale} url={url} />
       {draft && <LivePreviewListener />}
 
       <PostHero post={post} />
@@ -66,7 +72,7 @@ export default async function Post({ params: paramsPromise }: Args) {
       <div className="mx-auto max-w-7xl px-4 pt-12 sm:px-6 lg:px-8">
         <div className="mb-10">
           <Link
-            href="/posts"
+            href={localizeHref('/posts', locale)}
             className="inline-flex items-center gap-2 text-sm font-medium text-graphite-600 transition-colors hover:text-solar-600"
           >
             <span aria-hidden>←</span> Back to blog
@@ -93,14 +99,15 @@ export default async function Post({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = '' } = await paramsPromise
+  const { locale: localeParam, slug = '' } = await paramsPromise
+  const locale = parseLocale(localeParam)
   const decodedSlug = decodeURIComponent(slug)
-  const post = await queryPostBySlug({ slug: decodedSlug })
+  const post = await queryPostBySlug({ locale, slug: decodedSlug })
 
   return generateMeta({ doc: post })
 }
 
-const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
+const queryPostBySlug = cache(async ({ locale, slug }: { locale: Locale; slug: string }) => {
   const { isEnabled: draft } = await draftMode()
 
   const payload = await getPayload({ config: configPromise })
@@ -109,6 +116,7 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
     collection: 'posts',
     draft,
     limit: 1,
+    locale,
     overrideAccess: draft,
     pagination: false,
     where: {

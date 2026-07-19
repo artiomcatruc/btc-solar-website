@@ -45,17 +45,20 @@ export const BtcProcessSteps: Block = {
     {
       name: 'eyebrow',
       type: 'text',
+      localized: true,
       admin: { description: 'e.g. HOW IT WORKS' },
     },
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
       defaultValue: 'Our Installation Process',
     },
     {
       name: 'intro',
       type: 'textarea',
+      localized: true,
     },
     {
       name: 'steps',
@@ -66,11 +69,13 @@ export const BtcProcessSteps: Block = {
         {
           name: 'title',
           type: 'text',
+          localized: true,
           required: true,
         },
         {
           name: 'description',
           type: 'textarea',
+          localized: true,
           required: true,
         },
         {
@@ -85,6 +90,7 @@ export const BtcProcessSteps: Block = {
         {
           name: 'badge',
           type: 'text',
+          localized: true,
           admin: {
             condition: isVariant('cards'),
             description: 'Short label inside the circle, e.g. ISO, CE, TÜV.',

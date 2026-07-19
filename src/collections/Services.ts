@@ -25,11 +25,13 @@ export const Services: CollectionConfig<'services'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
     },
     {
       name: 'summary',
       type: 'textarea',
+      localized: true,
       required: true,
     },
     {

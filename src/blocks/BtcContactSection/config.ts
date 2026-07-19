@@ -11,6 +11,7 @@ export const BtcContactSection: Block = {
     {
       name: 'infoTitle',
       type: 'text',
+      localized: true,
       defaultValue: 'Contact Information',
     },
     {
@@ -28,16 +29,19 @@ export const BtcContactSection: Block = {
     {
       name: 'socialTitle',
       type: 'text',
+      localized: true,
       defaultValue: 'Follow Us',
     },
     {
       name: 'formTitle',
       type: 'text',
+      localized: true,
       defaultValue: 'Request a Free Consultation',
     },
     {
       name: 'formLead',
       type: 'textarea',
+      localized: true,
       defaultValue:
         'Fill out the form below and our team will contact you within 24 hours.',
     },
@@ -53,6 +57,7 @@ export const BtcContactSection: Block = {
     {
       name: 'privacyPolicyUrl',
       type: 'text',
+      localized: true,
       admin: {
         description: 'Optional link used in the consent checkbox label.',
       },

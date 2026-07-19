@@ -1,6 +1,15 @@
+'use client'
+
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
+import {
+  defaultLocale,
+  getLocaleFromPathname,
+  localizeHref,
+  type Locale,
+} from '@/utilities/locale'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import React from 'react'
 
 import type { Page, Post } from '@/payload-types'
@@ -10,6 +19,7 @@ type CMSLinkType = {
   children?: React.ReactNode
   className?: string
   label?: string | null
+  locale?: Locale
   newTab?: boolean | null
   reference?: {
     relationTo: 'pages' | 'posts'
@@ -20,37 +30,45 @@ type CMSLinkType = {
   url?: string | null
 }
 
-export const CMSLink: React.FC<CMSLinkType> = (props) => {
-  const {
-    type,
-    appearance = 'inline',
-    children,
-    className,
-    label,
-    newTab,
-    reference,
-    size: sizeFromProps,
-    url,
-  } = props
-
-  let href = url ?? undefined
+function resolveRawHref(props: CMSLinkType): string | undefined {
+  const { type, reference, url } = props
 
   if (type === 'reference' && reference && typeof reference.value === 'object' && reference.value.slug) {
     const slug = reference.value.slug
 
     if (reference.relationTo === 'pages') {
-      href = slug === 'home' ? '/' : `/${slug}`
-    } else {
-      href = `/posts/${slug}`
+      return slug === 'home' || slug === 'index' ? '/' : `/${slug}`
     }
+
+    return `/posts/${slug}`
   }
 
-  if (!href) return null
+  return url ?? undefined
+}
+
+export const CMSLink: React.FC<CMSLinkType> = (props) => {
+  const {
+    appearance = 'inline',
+    children,
+    className,
+    label,
+    locale: localeProp,
+    newTab,
+    size: sizeFromProps,
+    url,
+  } = props
+
+  const pathname = usePathname()
+  const locale = localeProp || getLocaleFromPathname(pathname) || defaultLocale
+
+  const rawHref = resolveRawHref(props)
+  if (!rawHref) return null
+
+  const href = localizeHref(rawHref, locale)
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
-  /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
       <Link className={cn(className)} href={href || url || ''} {...newTabProps}>

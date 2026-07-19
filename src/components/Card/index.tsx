@@ -1,8 +1,14 @@
 'use client'
 
+import {
+  defaultLocale,
+  getLocaleFromPathname,
+  localizeHref,
+} from '@/utilities/locale'
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import React from 'react'
 
 import type { Media as MediaType, Post } from '@/payload-types'
@@ -53,7 +59,9 @@ export const Card: React.FC<{
 
   const titleToUse = titleFromProps || title
   const sanitizedDescription = description?.replace(/\s/g, ' ')
-  const href = `/${relationTo}/${slug}`
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname) || defaultLocale
+  const href = localizeHref(`/${relationTo}/${slug}`, locale)
 
   const categoryBadges =
     showCategories && Array.isArray(categories)

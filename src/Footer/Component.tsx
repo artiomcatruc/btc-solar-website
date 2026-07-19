@@ -10,29 +10,36 @@ import type { Footer as FooterType, Header, Site } from '@/payload-types'
 import { FooterSocialIcon } from '@/Footer/SocialIcon'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { getCachedSite } from '@/utilities/getSite'
+import { defaultLocale, localizeHref, type Locale } from '@/utilities/locale'
+import { t } from '@/utilities/uiMessages'
 
 const DEFAULT_BRAND_DESCRIPTION =
   'Premium solar energy solutions for homes and businesses across Moldova. Your trusted partner in renewable energy.'
 
 const linkClassName = 'text-graphite-400 transition-colors hover:text-solar-400'
 
-export async function Footer() {
+type Props = {
+  locale?: Locale
+}
+
+export async function Footer({ locale = defaultLocale }: Props) {
   const [footerFn, site, headerFn] = await Promise.all([
-    getCachedGlobal('footer', 2),
-    getCachedSite(),
-    getCachedGlobal('header', 1),
+    getCachedGlobal('footer', 2, locale),
+    getCachedSite(locale),
+    getCachedGlobal('header', 1, locale),
   ])
 
   const [footer, header] = await Promise.all([footerFn(), headerFn()])
 
-  return <FooterInner footer={footer} header={header} site={site} />
+  return <FooterInner footer={footer} header={header} locale={locale} site={site} />
 }
 
 const FooterInner: React.FC<{
   footer: FooterType | null
   header: Header | null
+  locale: Locale
   site: Site | null
-}> = ({ footer, header, site }) => {
+}> = ({ footer, header, locale, site }) => {
   const linkColumns = (footer?.columns || []).slice(0, 2)
   const year = new Date().getFullYear()
   const siteTitle = site?.siteName?.trim() || 'BTC Solar'
@@ -41,13 +48,14 @@ const FooterInner: React.FC<{
     footer?.brandDescription?.trim() || site?.defaultDescription?.trim() || DEFAULT_BRAND_DESCRIPTION
   const copyright =
     footer?.copyrightText?.trim() || `© ${year} ${siteTitle}. All rights reserved.`
+  const homeHref = localizeHref('/', locale)
 
   return (
     <footer className="mt-auto bg-graphite-950 py-16 text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Link className="mb-6 flex items-center gap-3" href="/">
+            <Link className="mb-6 flex items-center gap-3" href={homeHref}>
               {typeof header?.logo === 'object' && header.logo?.id ? (
                 <>
                   <div className="relative h-10 w-10 shrink-0">
@@ -77,7 +85,7 @@ const FooterInner: React.FC<{
               <ul className="space-y-3">
                 {(column.links || []).map(({ link }, idx) => (
                   <li key={`${link?.label}-${idx}`}>
-                    <CMSLink {...link} appearance="inline" className={linkClassName} />
+                    <CMSLink {...link} appearance="inline" className={linkClassName} locale={locale} />
                   </li>
                 ))}
               </ul>
@@ -86,7 +94,7 @@ const FooterInner: React.FC<{
 
           {footer?.showContactFromSite !== false ? (
             <div>
-              <h4 className="mb-6 text-lg font-semibold">Contact Info</h4>
+              <h4 className="mb-6 text-lg font-semibold">{t(locale, 'contactInfo')}</h4>
               <ul className="space-y-3 text-graphite-400">
                 {site?.address ? (
                   <li className="flex items-center gap-3">
@@ -105,7 +113,10 @@ const FooterInner: React.FC<{
                       className="h-5 w-5 shrink-0 text-solar-400"
                       strokeWidth={2}
                     />
-                    <a className="transition-colors hover:text-solar-400" href={`tel:${site.phone.replace(/\s/g, '')}`}>
+                    <a
+                      className="transition-colors hover:text-solar-400"
+                      href={`tel:${site.phone.replace(/\s/g, '')}`}
+                    >
                       {site.phone}
                     </a>
                   </li>

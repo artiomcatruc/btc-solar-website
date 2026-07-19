@@ -30,18 +30,21 @@ export const BtcDifference: Block = {
     {
       name: 'eyebrow',
       type: 'text',
+      localized: true,
       defaultValue: 'Transformation',
       admin: { description: 'Uppercase label above the heading.' },
     },
     {
       name: 'heading',
       type: 'text',
+      localized: true,
       required: true,
       defaultValue: 'See the Difference',
     },
     {
       name: 'intro',
       type: 'textarea',
+      localized: true,
       admin: { description: 'Optional lead paragraph below the heading.' },
     },
     {
@@ -68,6 +71,7 @@ export const BtcDifference: Block = {
             {
               name: 'badge',
               type: 'text',
+              localized: true,
               defaultValue: 'After Installation',
               admin: { width: '50%' },
             },
@@ -83,11 +87,13 @@ export const BtcDifference: Block = {
         {
           name: 'title',
           type: 'text',
+          localized: true,
           required: true,
         },
         {
           name: 'description',
           type: 'textarea',
+          localized: true,
           required: true,
         },
         {
@@ -96,16 +102,19 @@ export const BtcDifference: Block = {
             {
               name: 'metaLabel',
               type: 'text',
+              localized: true,
               admin: { width: '33%', placeholder: 'System Size' },
             },
             {
               name: 'metaValue',
               type: 'text',
+              localized: true,
               admin: { width: '33%', placeholder: '8 kW' },
             },
             {
               name: 'highlight',
               type: 'text',
+              localized: true,
               admin: { width: '34%', placeholder: '-75% Energy Bills' },
             },
           ],

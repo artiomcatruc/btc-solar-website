@@ -10,8 +10,9 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 import { buildPostsHref, type PostsFilterParams } from '@/utilities/postsQuery'
+import { defaultLocale, getLocaleFromPathname } from '@/utilities/locale'
 import { cn } from '@/utilities/ui'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import React from 'react'
 
 export const Pagination: React.FC<{
@@ -21,6 +22,8 @@ export const Pagination: React.FC<{
   filters?: PostsFilterParams
 }> = (props) => {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname) || defaultLocale
 
   const { className, page, totalPages, filters } = props
   const hasNextPage = page < totalPages
@@ -36,6 +39,7 @@ export const Pagination: React.FC<{
         tag: filters?.tag,
         q: filters?.q,
         page: nextPage,
+        locale,
       }),
     )
   }

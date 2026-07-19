@@ -46,14 +46,14 @@ export default function NotFound() {
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
-            href="/"
+            href="/en"
             className="flex w-full items-center justify-center gap-2 rounded-full bg-solar-400 px-8 py-4 font-semibold text-graphite-900 transition-colors hover:bg-solar-300 sm:w-auto"
           >
             Back to home
             <ButtonArrow />
           </Link>
           <Link
-            href="/contact"
+            href="/en/contact"
             className="flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-8 py-4 font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20 sm:w-auto"
           >
             Contact us

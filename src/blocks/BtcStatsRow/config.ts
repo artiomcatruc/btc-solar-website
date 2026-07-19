@@ -18,6 +18,7 @@ export const BtcStatsRow: Block = {
         {
           name: 'value',
           type: 'text',
+          localized: true,
           required: true,
           admin: {
             description: 'Number plus suffix, e.g. 500+, 10MW, 98% — suffix renders in solar accent.',
@@ -26,6 +27,7 @@ export const BtcStatsRow: Block = {
         {
           name: 'label',
           type: 'text',
+          localized: true,
           required: true,
           admin: { description: 'Caption below the number.' },
         },
