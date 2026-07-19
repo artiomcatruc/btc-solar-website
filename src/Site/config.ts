@@ -39,6 +39,14 @@ export const Site: GlobalConfig = {
       ],
     },
     {
+      name: 'whatsappPhone',
+      type: 'text',
+      admin: {
+        description:
+          'WhatsApp number for the floating chat button. Falls back to phone if empty. Use international format, e.g. +373 60 000 000.',
+      },
+    },
+    {
       name: 'phones',
       type: 'array',
       admin: {

@@ -2554,6 +2554,10 @@ export interface Site {
   phone?: string | null;
   email?: string | null;
   /**
+   * WhatsApp number for the floating chat button. Falls back to phone if empty. Use international format, e.g. +373 60 000 000.
+   */
+  whatsappPhone?: string | null;
+  /**
    * Optional extra phone numbers shown on the contact page.
    */
   phones?:
@@ -2721,6 +2725,7 @@ export interface SiteSelect<T extends boolean = true> {
   ogImage?: T;
   phone?: T;
   email?: T;
+  whatsappPhone?: T;
   phones?:
     | T
     | {

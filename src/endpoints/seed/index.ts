@@ -246,6 +246,7 @@ export const seed = async ({
         defaultDescription:
           'Premium solar panel installation across Moldova. Residential and commercial renewable energy solutions.',
         phone: '+373 22 000 000',
+        whatsappPhone: '+373 60 000 000',
         email: 'info@btcsolar.md',
         phones: [{ number: '+373 22 000 000' }, { number: '+373 60 000 000' }],
         emails: [{ address: 'info@btcsolar.md' }, { address: 'sales@btcsolar.md' }],

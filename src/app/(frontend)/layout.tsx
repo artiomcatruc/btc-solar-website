@@ -8,6 +8,7 @@ import React from 'react'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { AdminBar } from '@/components/AdminBar'
+import { WhatsAppButton } from '@/components/WhatsAppButton'
 import { Providers } from '@/providers'
 import { getRequestLocale } from '@/utilities/getRequestLocale'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
@@ -43,6 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Header locale={locale} />
           {children}
           <Footer locale={locale} />
+          <WhatsAppButton locale={locale} />
         </Providers>
       </body>
     </html>
