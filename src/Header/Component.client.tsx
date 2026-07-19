@@ -1,6 +1,7 @@
 'use client'
 
 import { BtcSolarMark } from '@/components/BtcSolar/Mark'
+import { CartButton } from '@/components/Cart/CartButton'
 import { CMSLink } from '@/components/Link'
 import { LocaleSwitcher } from '@/components/LocaleSwitcher'
 import { Media } from '@/components/Media'
@@ -127,6 +128,7 @@ export const HeaderClient: React.FC<Props> = ({ header, locale, site }) => {
             </div>
 
             <div className="hidden items-center gap-3 md:flex">
+              <CartButton locale={locale} />
               <LocaleSwitcher locale={locale} />
               {hasCta && headerCta ? (
                 <CMSLink
@@ -141,6 +143,7 @@ export const HeaderClient: React.FC<Props> = ({ header, locale, site }) => {
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
+              <CartButton locale={locale} />
               <LocaleSwitcher locale={locale} />
               <button
                 aria-expanded={mobileOpen}

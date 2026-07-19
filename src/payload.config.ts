@@ -11,6 +11,7 @@ import { Faqs } from './collections/Faqs'
 import { GalleryItems } from './collections/GalleryItems'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
+import { Orders } from './collections/Orders'
 import { Posts } from './collections/Posts'
 import { Products } from './collections/Products'
 import { Services } from './collections/Services'
@@ -83,6 +84,7 @@ export default buildConfig({
     Pages,
     Posts,
     Products,
+    Orders,
     Media,
     Categories,
     Tags,

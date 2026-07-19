@@ -17,6 +17,7 @@ const collections: CollectionSlug[] = [
   'testimonials',
   'faqs',
   'products',
+  'orders',
   'categories',
   'tags',
   'media',

@@ -2,6 +2,8 @@ import React from 'react'
 
 import type { Product } from '@/payload-types'
 
+import { formatPrice } from '@/cart/formatPrice'
+import { AddToCartButton } from '@/components/Cart/AddToCartButton'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
 import type { Locale } from '@/utilities/locale'
@@ -10,18 +12,6 @@ import { t } from '@/utilities/uiMessages'
 type Props = {
   product: Product
   locale: Locale
-}
-
-const formatPrice = (price: number, currency: Product['currency'], locale: Locale) => {
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: price % 1 === 0 ? 0 : 2,
-    }).format(price)
-  } catch {
-    return `${price} ${currency}`
-  }
 }
 
 export const ProductCard: React.FC<Props> = ({ product, locale }) => {
@@ -73,22 +63,24 @@ export const ProductCard: React.FC<Props> = ({ product, locale }) => {
           {product.summary}
         </p>
 
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-graphite-100 pt-4 text-sm">
-          <span className="font-medium text-graphite-500">
-            {unavailable
-              ? t(locale, 'soldOut')
-              : t(locale, 'inStockCount').replace('{count}', String(product.quantity))}
-          </span>
-          <span
-            className={cn(
-              'rounded-full px-2.5 py-1 text-xs font-semibold',
-              unavailable
-                ? 'bg-red-50 text-red-700'
-                : 'bg-eco-50 text-eco-600',
-            )}
-          >
-            {unavailable ? t(locale, 'soldOut') : t(locale, 'inStock')}
-          </span>
+        <div className="mt-auto space-y-4 border-t border-graphite-100 pt-4">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <span className="font-medium text-graphite-500">
+              {unavailable
+                ? t(locale, 'soldOut')
+                : t(locale, 'inStockCount').replace('{count}', String(product.quantity))}
+            </span>
+            <span
+              className={cn(
+                'rounded-full px-2.5 py-1 text-xs font-semibold',
+                unavailable ? 'bg-red-50 text-red-700' : 'bg-eco-50 text-eco-600',
+              )}
+            >
+              {unavailable ? t(locale, 'soldOut') : t(locale, 'inStock')}
+            </span>
+          </div>
+
+          <AddToCartButton disabled={unavailable} locale={locale} productId={product.id} />
         </div>
       </div>
     </article>

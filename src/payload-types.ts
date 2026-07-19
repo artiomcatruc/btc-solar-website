@@ -70,6 +70,7 @@ export interface Config {
     pages: Page;
     posts: Post;
     products: Product;
+    orders: Order;
     media: Media;
     categories: Category;
     tags: Tag;
@@ -98,6 +99,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
@@ -1353,6 +1355,51 @@ export interface Product {
   createdAt: string;
 }
 /**
+ * Storefront orders. Contact the customer and arrange payment offline.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  /**
+   * Track outreach and fulfillment. Payment stays offline.
+   */
+  status: 'new' | 'contacted' | 'fulfilled' | 'cancelled';
+  customerName: string;
+  phone: string;
+  /**
+   * Delivery / contact address.
+   */
+  address: string;
+  /**
+   * Optional message from the customer.
+   */
+  note?: string | null;
+  /**
+   * Prices and titles are snapshotted at checkout.
+   */
+  items: {
+    product: number | Product;
+    /**
+     * Snapshotted at checkout.
+     */
+    title: string;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+    currency: 'MDL' | 'EUR' | 'USD';
+    id?: string | null;
+  }[];
+  /**
+   * Computed from line items at checkout.
+   */
+  total: number;
+  currency: 'MDL' | 'EUR' | 'USD';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -1594,6 +1641,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'products';
         value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
       } | null)
     | ({
         relationTo: 'media';
@@ -2129,6 +2180,32 @@ export interface ProductsSelect<T extends boolean = true> {
   sort?: T;
   generateSlug?: T;
   slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  status?: T;
+  customerName?: T;
+  phone?: T;
+  address?: T;
+  note?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        title?: T;
+        quantity?: T;
+        unitPrice?: T;
+        lineTotal?: T;
+        currency?: T;
+        id?: T;
+      };
+  total?: T;
+  currency?: T;
   updatedAt?: T;
   createdAt?: T;
 }
