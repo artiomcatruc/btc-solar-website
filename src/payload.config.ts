@@ -12,6 +12,7 @@ import { GalleryItems } from './collections/GalleryItems'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
+import { Products } from './collections/Products'
 import { Services } from './collections/Services'
 import { Tags } from './collections/Tags'
 import { Testimonials } from './collections/Testimonials'
@@ -81,6 +82,7 @@ export default buildConfig({
   collections: [
     Pages,
     Posts,
+    Products,
     Media,
     Categories,
     Tags,

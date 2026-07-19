@@ -9,12 +9,14 @@ import { imageHero1 } from './image-hero-1'
 import { post1 } from './post-1'
 import { post2 } from './post-2'
 import { post3 } from './post-3'
+import { sampleProducts } from './products'
 
 const collections: CollectionSlug[] = [
   'gallery-items',
   'services',
   'testimonials',
   'faqs',
+  'products',
   'categories',
   'tags',
   'media',
@@ -212,6 +214,37 @@ export const seed = async ({
     },
   })
 
+  payload.logger.info(`— Seeding products...`)
+
+  for (const product of sampleProducts({
+    image1: image1Doc,
+    image2: image2Doc,
+    image3: image3Doc,
+  })) {
+    const { locales, ...base } = product
+    const created = await payload.create({
+      collection: 'products',
+      depth: 0,
+      locale: 'en',
+      context: { disableRevalidate: true },
+      data: {
+        ...base,
+        ...locales.en,
+      },
+    })
+
+    for (const locale of ['ru', 'ro'] as const) {
+      await payload.update({
+        collection: 'products',
+        id: created.id,
+        depth: 0,
+        locale,
+        context: { disableRevalidate: true },
+        data: locales[locale],
+      })
+    }
+  }
+
   payload.logger.info(`— Seeding contact form...`)
 
   const contactForm = await payload.create({
@@ -314,6 +347,13 @@ export const seed = async ({
               type: 'custom',
               label: 'Gallery',
               url: '/gallery',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Products',
+              url: '/products',
             },
           },
           {
