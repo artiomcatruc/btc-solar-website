@@ -422,6 +422,13 @@ export const seed = async ({
               },
               {
                 link: {
+                  type: 'custom',
+                  label: 'Products',
+                  url: '/products',
+                },
+              },
+              {
+                link: {
                   type: 'reference',
                   label: 'Contact',
                   reference: {

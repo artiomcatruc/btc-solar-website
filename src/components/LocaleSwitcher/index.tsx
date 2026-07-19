@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { cn } from '@/utilities/ui'
 import {
@@ -20,7 +20,12 @@ type Props = {
 
 export const LocaleSwitcher: React.FC<Props> = ({ className, locale: localeProp }) => {
   const pathname = usePathname()
-  const current = localeProp || getLocaleFromPathname(pathname) || 'en'
+  // Prefer pathname — localeProp from a stale RSC layout can lag behind soft navigations.
+  const current = getLocaleFromPathname(pathname) || localeProp || 'en'
+
+  useEffect(() => {
+    document.documentElement.lang = current
+  }, [current])
 
   return (
     <div

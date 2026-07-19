@@ -59,7 +59,8 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   } = props
 
   const pathname = usePathname()
-  const locale = localeProp || getLocaleFromPathname(pathname) || defaultLocale
+  // Prefer pathname so soft locale switches don't keep a stale layout prop.
+  const locale = getLocaleFromPathname(pathname) || localeProp || defaultLocale
 
   const rawHref = resolveRawHref(props)
   if (!rawHref) return null

@@ -5,10 +5,7 @@ import { GeistMono } from 'geist/font/mono'
 import { Inter } from 'next/font/google'
 import React from 'react'
 
-import { Footer } from '@/Footer/Component'
-import { Header } from '@/Header/Component'
 import { AdminBar } from '@/components/AdminBar'
-import { WhatsAppButton } from '@/components/WhatsAppButton'
 import { Providers } from '@/providers'
 import { getRequestLocale } from '@/utilities/getRequestLocale'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
@@ -25,6 +22,8 @@ const inter = Inter({
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+  // lang attribute only — Header/Footer live in [locale]/layout so soft locale
+  // switches re-fetch them. Root layouts do not re-render on client navigations.
   const locale = await getRequestLocale()
 
   return (
@@ -40,11 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               preview: isEnabled,
             }}
           />
-
-          <Header locale={locale} />
           {children}
-          <Footer locale={locale} />
-          <WhatsAppButton locale={locale} />
         </Providers>
       </body>
     </html>
