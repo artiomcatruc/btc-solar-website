@@ -69,8 +69,11 @@ export interface Config {
   collections: {
     pages: Page;
     posts: Post;
+    products: Product;
+    orders: Order;
     media: Media;
     categories: Category;
+    tags: Tag;
     services: Service;
     testimonials: Testimonial;
     faqs: Faq;
@@ -95,8 +98,11 @@ export interface Config {
   collectionsSelect: {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
@@ -277,6 +283,7 @@ export interface Post {
   };
   relatedPosts?: (number | Post)[] | null;
   categories?: (number | Category)[] | null;
+  tags?: (number | Tag)[] | null;
   meta?: {
     title?: string | null;
     /**
@@ -286,13 +293,6 @@ export interface Post {
     description?: string | null;
   };
   publishedAt?: string | null;
-  authors?: (number | User)[] | null;
-  populatedAuthors?:
-    | {
-        id?: string | null;
-        name?: string | null;
-      }[]
-    | null;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
@@ -451,29 +451,18 @@ export interface Category {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "tags".
  */
-export interface User {
+export interface Tag {
   id: number;
-  name?: string | null;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1129,7 +1118,7 @@ export interface Form {
     url: string;
   };
   /**
-   * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
+   * Email notifications are disabled. Check Leads in the admin dashboard instead.
    */
   emails?:
     | {
@@ -1333,6 +1322,123 @@ export interface FormBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  title: string;
+  summary: string;
+  image: number | Media;
+  /**
+   * Display price only — payment is offline.
+   */
+  price: number;
+  currency: 'MDL' | 'EUR' | 'USD';
+  /**
+   * Units available. Quantity 0 auto-marks sold out.
+   */
+  quantity: number;
+  /**
+   * Manual override. Also set automatically when quantity is 0.
+   */
+  soldOut?: boolean | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  /**
+   * Lower sorts first on the storefront.
+   */
+  sort?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Storefront orders. Contact the customer and arrange payment offline.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  /**
+   * Track outreach and fulfillment. Payment stays offline.
+   */
+  status: 'new' | 'contacted' | 'fulfilled' | 'cancelled';
+  customerName: string;
+  phone: string;
+  /**
+   * Delivery / contact address.
+   */
+  address: string;
+  /**
+   * Optional message from the customer.
+   */
+  note?: string | null;
+  /**
+   * Prices and titles are snapshotted at checkout.
+   */
+  items: {
+    product: number | Product;
+    /**
+     * Snapshotted at checkout.
+     */
+    title: string;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+    currency: 'MDL' | 'EUR' | 'USD';
+    id?: string | null;
+  }[];
+  /**
+   * Computed from line items at checkout.
+   */
+  total: number;
+  currency: 'MDL' | 'EUR' | 'USD';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: number;
+  name?: string | null;
+  /**
+   * Admins manage users and seed. Editors manage content.
+   */
+  roles: ('admin' | 'editor')[];
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1358,12 +1464,27 @@ export interface Redirect {
   createdAt: string;
 }
 /**
+ * Contact form requests. Mark as Reviewed after you handle them.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
   id: number;
+  /**
+   * Mark Reviewed once you have contacted the lead.
+   */
+  status: 'new' | 'reviewed';
+  name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  projectType?: string | null;
+  location?: string | null;
+  message?: string | null;
   form: number | Form;
+  /**
+   * Raw field/value pairs from the form. Prefer the summary fields above.
+   */
   submissionData?:
     | {
         field: string;
@@ -1530,12 +1651,24 @@ export interface PayloadLockedDocument {
         value: number | Post;
       } | null)
     | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: number | Tag;
       } | null)
     | ({
         relationTo: 'services';
@@ -2029,6 +2162,7 @@ export interface PostsSelect<T extends boolean = true> {
   content?: T;
   relatedPosts?: T;
   categories?: T;
+  tags?: T;
   meta?:
     | T
     | {
@@ -2037,18 +2171,62 @@ export interface PostsSelect<T extends boolean = true> {
         description?: T;
       };
   publishedAt?: T;
-  authors?: T;
-  populatedAuthors?:
-    | T
-    | {
-        id?: T;
-        name?: T;
-      };
   generateSlug?: T;
   slug?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  title?: T;
+  summary?: T;
+  image?: T;
+  price?: T;
+  currency?: T;
+  quantity?: T;
+  soldOut?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  sort?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  status?: T;
+  customerName?: T;
+  phone?: T;
+  address?: T;
+  note?: T;
+  items?:
+    | T
+    | {
+        product?: T;
+        title?: T;
+        quantity?: T;
+        unitPrice?: T;
+        lineTotal?: T;
+        currency?: T;
+        id?: T;
+      };
+  total?: T;
+  currency?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2167,6 +2345,17 @@ export interface CategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services_select".
  */
 export interface ServicesSelect<T extends boolean = true> {
@@ -2226,6 +2415,7 @@ export interface GalleryItemsSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -2397,6 +2587,13 @@ export interface FormsSelect<T extends boolean = true> {
  * via the `definition` "form-submissions_select".
  */
 export interface FormSubmissionsSelect<T extends boolean = true> {
+  status?: T;
+  name?: T;
+  phone?: T;
+  email?: T;
+  projectType?: T;
+  location?: T;
+  message?: T;
   form?: T;
   submissionData?:
     | T
@@ -2533,6 +2730,10 @@ export interface Site {
   ogImage?: (number | null) | Media;
   phone?: string | null;
   email?: string | null;
+  /**
+   * WhatsApp number for the floating chat button. Falls back to phone if empty. Use international format, e.g. +373 60 000 000.
+   */
+  whatsappPhone?: string | null;
   /**
    * Optional extra phone numbers shown on the contact page.
    */
@@ -2701,6 +2902,7 @@ export interface SiteSelect<T extends boolean = true> {
   ogImage?: T;
   phone?: T;
   email?: T;
+  whatsappPhone?: T;
   phones?:
     | T
     | {

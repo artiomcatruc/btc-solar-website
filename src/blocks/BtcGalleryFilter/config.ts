@@ -34,6 +34,7 @@ export const BtcGalleryFilter: Block = {
     {
       name: 'allLabel',
       type: 'text',
+      localized: true,
       defaultValue: 'All Projects',
       admin: { description: 'Label for the catch-all filter button.' },
     },

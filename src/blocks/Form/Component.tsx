@@ -2,7 +2,9 @@
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
 
 import type { Form as PayloadForm } from '@/payload-types'
+import { HoneypotField } from '@/components/HoneypotField'
 import RichText from '@/components/RichText'
+import { Turnstile } from '@/components/Turnstile'
 import { Button } from '@/components/ui/button'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import { useRouter } from 'next/navigation'
@@ -10,6 +12,7 @@ import React, { useCallback, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { getClientSideURL } from '@/utilities/getURL'
+import { publicSubmitHeaders } from '@/utilities/publicSubmitHeaders'
 import { cn } from '@/utilities/ui'
 import { fields } from './fields'
 
@@ -66,6 +69,12 @@ const FormBlockInner: React.FC<
   const [isLoading, setIsLoading] = useState(false)
   const [hasSubmitted, setHasSubmitted] = useState<boolean>()
   const [error, setError] = useState<{ message: string; status?: string } | undefined>()
+  const [honeypot, setHoneypot] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
+  const onTurnstileToken = useCallback((token: string | null) => {
+    setTurnstileToken(token)
+  }, [])
   const router = useRouter()
 
   const onSubmit = useCallback(
@@ -73,6 +82,11 @@ const FormBlockInner: React.FC<
       let loadingTimerID: ReturnType<typeof setTimeout>
       const submitForm = async () => {
         setError(undefined)
+
+        if (turnstileRequired && !turnstileToken) {
+          setError({ message: 'Please complete the captcha before submitting.' })
+          return
+        }
 
         const dataToSend = Object.entries(data).map(([name, value]) => ({
           field: name,
@@ -90,9 +104,7 @@ const FormBlockInner: React.FC<
               form: formID,
               submissionData: dataToSend,
             }),
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: publicSubmitHeaders({ honeypot, turnstileToken }),
             method: 'POST',
           })
 
@@ -132,7 +144,7 @@ const FormBlockInner: React.FC<
 
       void submitForm()
     },
-    [router, formID, redirect, confirmationType],
+    [router, formID, redirect, confirmationType, honeypot, turnstileToken, turnstileRequired],
   )
 
   return (
@@ -173,7 +185,15 @@ const FormBlockInner: React.FC<
                   })}
               </div>
 
-              <Button form={formID} type="submit" variant="default">
+              <HoneypotField value={honeypot} onChange={setHoneypot} />
+              <Turnstile className="mb-4" onToken={onTurnstileToken} />
+
+              <Button
+                disabled={turnstileRequired && !turnstileToken}
+                form={formID}
+                type="submit"
+                variant="default"
+              >
                 {submitButtonLabel}
               </Button>
             </form>

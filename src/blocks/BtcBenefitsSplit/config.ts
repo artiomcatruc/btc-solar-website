@@ -21,12 +21,14 @@ export const BtcBenefitsSplit: Block = {
     {
       name: 'eyebrow',
       type: 'text',
+      localized: true,
       defaultValue: 'Why Solar?',
       admin: { description: 'Uppercase label above the heading.' },
     },
     {
       name: 'heading',
       type: 'text',
+      localized: true,
       required: true,
       defaultValue: 'Benefits of Going Solar',
     },
@@ -79,11 +81,13 @@ export const BtcBenefitsSplit: Block = {
         {
           name: 'title',
           type: 'text',
+          localized: true,
           required: true,
         },
         {
           name: 'description',
           type: 'textarea',
+          localized: true,
           required: true,
         },
       ],
@@ -100,11 +104,13 @@ export const BtcBenefitsSplit: Block = {
         {
           name: 'cardTitle',
           type: 'text',
+          localized: true,
           admin: { width: '50%', placeholder: '25+ Years', description: 'Optional floating badge title.' },
         },
         {
           name: 'cardSubtitle',
           type: 'text',
+          localized: true,
           admin: {
             width: '50%',
             placeholder: 'Panel Warranty',

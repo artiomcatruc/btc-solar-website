@@ -10,17 +10,29 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
-import { Page, Post } from '@/payload-types'
-import { getServerSideURL } from '@/utilities/getURL'
+import { adminOrEditor, isAdminOrEditor } from '@/access/roles'
+import { formSubmissionOverrides } from '@/form-submissions/overrides'
+import { Page, Post, Product } from '@/payload-types'
+import { parseLocale } from '@/utilities/locale'
+import { absoluteUrl, collectionInternalPath, SITE_BRAND, withBrandTitle } from '@/utilities/seo'
 
-const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
+const generateTitle: GenerateTitle<Post | Page | Product> = ({ doc }) => {
+  return withBrandTitle(doc?.title) || SITE_BRAND
 }
 
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
-  const url = getServerSideURL()
+const generateURL: GenerateURL<Post | Page | Product> = ({ doc, locale, collectionSlug }) => {
+  const loc = parseLocale(locale)
+  const slug = typeof doc?.slug === 'string' ? doc.slug : null
 
-  return doc?.slug ? `${url}/${doc.slug}` : url
+  const collection =
+    collectionSlug === 'posts'
+      ? 'posts'
+      : collectionSlug === 'products'
+        ? 'products'
+        : 'pages'
+
+  const path = collectionInternalPath(collection, slug)
+  return absoluteUrl(`/${loc}${path === '/' ? '' : path}`)
 }
 
 export const plugins: Plugin[] = [
@@ -59,8 +71,31 @@ export const plugins: Plugin[] = [
       payment: false,
     },
     formOverrides: {
+      access: {
+        // Public read still needed so storefront can render form fields.
+        // Sensitive notification config is stripped via field access below.
+        read: () => true,
+        create: adminOrEditor,
+        update: adminOrEditor,
+        delete: adminOrEditor,
+      },
+      // @ts-expect-error - mapped field admin overrides don't narrow cleanly
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
+          if ('name' in field && field.name === 'emails') {
+            return {
+              ...field,
+              access: {
+                read: ({ req: { user } }) => isAdminOrEditor(user),
+              },
+              admin: {
+                ...field.admin,
+                hidden: true,
+                description:
+                  'Email notifications are disabled. Check Leads in the admin dashboard instead.',
+              },
+            }
+          }
           if ('name' in field && field.name === 'confirmationMessage') {
             return {
               ...field,
@@ -79,6 +114,7 @@ export const plugins: Plugin[] = [
         })
       },
     },
+    formSubmissionOverrides,
   }),
   searchPlugin({
     collections: ['posts'],

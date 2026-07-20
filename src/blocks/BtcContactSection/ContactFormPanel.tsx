@@ -2,7 +2,9 @@
 
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
 
+import { HoneypotField } from '@/components/HoneypotField'
 import RichText from '@/components/RichText'
+import { Turnstile } from '@/components/Turnstile'
 import type { Form as PayloadForm } from '@/payload-types'
 import { ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -16,6 +18,7 @@ import {
 } from '@/blocks/Form/appearance'
 import { fields } from '@/blocks/Form/fields'
 import { getClientSideURL } from '@/utilities/getURL'
+import { publicSubmitHeaders } from '@/utilities/publicSubmitHeaders'
 import { cn } from '@/utilities/ui'
 
 type Props = {
@@ -53,6 +56,12 @@ export const ContactFormPanel: React.FC<Props> = ({
   const [isLoading, setIsLoading] = useState(false)
   const [hasSubmitted, setHasSubmitted] = useState<boolean>()
   const [error, setError] = useState<{ message: string; status?: string } | undefined>()
+  const [honeypot, setHoneypot] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
+  const onTurnstileToken = useCallback((token: string | null) => {
+    setTurnstileToken(token)
+  }, [])
   const router = useRouter()
 
   const fieldRows = groupContactFormFields(formFromProps.fields ?? [])
@@ -62,6 +71,11 @@ export const ContactFormPanel: React.FC<Props> = ({
       let loadingTimerID: ReturnType<typeof setTimeout>
       const submitForm = async () => {
         setError(undefined)
+
+        if (turnstileRequired && !turnstileToken) {
+          setError({ message: 'Please complete the captcha before submitting.' })
+          return
+        }
 
         const dataToSend = Object.entries(data).map(([name, value]) => ({
           field: name,
@@ -78,9 +92,7 @@ export const ContactFormPanel: React.FC<Props> = ({
               form: formID,
               submissionData: dataToSend,
             }),
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: publicSubmitHeaders({ honeypot, turnstileToken }),
             method: 'POST',
           })
 
@@ -115,7 +127,7 @@ export const ContactFormPanel: React.FC<Props> = ({
 
       void submitForm()
     },
-    [router, formID, redirect, confirmationType],
+    [router, formID, redirect, confirmationType, honeypot, turnstileToken, turnstileRequired],
   )
 
   return (
@@ -172,9 +184,12 @@ export const ContactFormPanel: React.FC<Props> = ({
                 </div>
               ))}
 
+              <HoneypotField value={honeypot} onChange={setHoneypot} />
+              <Turnstile onToken={onTurnstileToken} />
+
               <button
                 className="flex w-full items-center justify-center gap-2 rounded-full bg-graphite-900 px-8 py-4 font-semibold text-white transition-colors hover:bg-graphite-800 disabled:opacity-60"
-                disabled={isLoading}
+                disabled={isLoading || (turnstileRequired && !turnstileToken)}
                 form={String(formID)}
                 type="submit"
               >

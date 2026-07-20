@@ -3,6 +3,7 @@ import React from 'react'
 import type { BtcStatsRowBlock } from '@/payload-types'
 
 import { getCachedHomeStats } from '@/utilities/getHomeStats'
+import { getRequestLocale } from '@/utilities/getRequestLocale'
 
 type InlineStat = NonNullable<BtcStatsRowBlock['stats']>[number]
 
@@ -36,7 +37,8 @@ export async function BtcStatsRowComponent(props: BtcStatsRowBlock) {
   }))
 
   if (!rows.length && preferGlobalHomeStats) {
-    const globalDoc = await getCachedHomeStats()
+    const locale = await getRequestLocale()
+    const globalDoc = await getCachedHomeStats(locale)
     const globalsRows = Array.isArray(globalDoc.stats)
       ? (globalDoc.stats as { id?: unknown; value?: string | null; label?: string | null }[])
       : []

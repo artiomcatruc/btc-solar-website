@@ -11,8 +11,11 @@ import { Faqs } from './collections/Faqs'
 import { GalleryItems } from './collections/GalleryItems'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
+import { Orders } from './collections/Orders'
 import { Posts } from './collections/Posts'
+import { Products } from './collections/Products'
 import { Services } from './collections/Services'
+import { Tags } from './collections/Tags'
 import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
@@ -25,8 +28,11 @@ import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const serverURL = getServerSideURL()
 
 export default buildConfig({
+  serverURL,
+  csrf: [serverURL].filter(Boolean),
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
@@ -67,6 +73,9 @@ export default buildConfig({
   editor: defaultLexical,
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URL || '' },
+    // Never auto-push — localization moves columns into *_locales; push would drop data.
+    // Apply schema via `pnpm payload migrate` only.
+    push: false,
     prodMigrations: migrations,
   }),
   localization: {
@@ -74,8 +83,21 @@ export default buildConfig({
     defaultLocale: 'en',
     fallback: true,
   },
-  collections: [Pages, Posts, Media, Categories, Services, Testimonials, Faqs, GalleryItems, Users],
-  cors: [getServerSideURL()].filter(Boolean),
+  collections: [
+    Pages,
+    Posts,
+    Products,
+    Orders,
+    Media,
+    Categories,
+    Tags,
+    Services,
+    Testimonials,
+    Faqs,
+    GalleryItems,
+    Users,
+  ],
+  cors: [serverURL].filter(Boolean),
   globals: [Site, HomeStats, Header, Footer],
   plugins: [
     ...plugins,
@@ -116,15 +138,14 @@ export default buildConfig({
   jobs: {
     access: {
       run: ({ req }: { req: PayloadRequest }): boolean => {
-        // Allow logged in users to execute this endpoint (default)
-        if (req.user) return true
+        const roles = req.user?.roles
+        if (Array.isArray(roles) && roles.some((role) => role === 'admin' || role === 'editor')) {
+          return true
+        }
 
         const secret = process.env.CRON_SECRET
         if (!secret) return false
 
-        // If there is no logged in user, then check
-        // for the Vercel Cron secret to be present as an
-        // Authorization header:
         const authHeader = req.headers.get('authorization')
         return authHeader === `Bearer ${secret}`
       },

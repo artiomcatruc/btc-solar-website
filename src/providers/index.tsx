@@ -1,3 +1,7 @@
 import React from 'react'
 
-export const Providers = ({ children }: { children: React.ReactNode }) => children
+import { CartProvider } from '@/cart/CartProvider'
+
+export const Providers = ({ children }: { children: React.ReactNode }) => {
+  return <CartProvider>{children}</CartProvider>
+}

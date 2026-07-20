@@ -1,6 +1,7 @@
 import React from 'react'
 
 import type { BtcContactSectionBlock, Form } from '@/payload-types'
+import { getRequestLocale } from '@/utilities/getRequestLocale'
 import { getCachedSite } from '@/utilities/getSite'
 
 import { ContactFormPanel } from './ContactFormPanel'
@@ -21,7 +22,8 @@ export async function BtcContactSectionComponent(props: BtcContactSectionBlock) 
     privacyPolicyUrl,
   } = props
 
-  const site = showSiteContactDetails || showSocialLinks ? await getCachedSite() : null
+  const locale = await getRequestLocale()
+  const site = showSiteContactDetails || showSocialLinks ? await getCachedSite(locale) : null
 
   if (!isForm(form)) return null
 

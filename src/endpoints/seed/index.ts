@@ -9,13 +9,17 @@ import { imageHero1 } from './image-hero-1'
 import { post1 } from './post-1'
 import { post2 } from './post-2'
 import { post3 } from './post-3'
+import { sampleProducts } from './products'
 
 const collections: CollectionSlug[] = [
   'gallery-items',
   'services',
   'testimonials',
   'faqs',
+  'products',
+  'orders',
   'categories',
+  'tags',
   'media',
   'pages',
   'posts',
@@ -25,6 +29,7 @@ const collections: CollectionSlug[] = [
 ]
 
 const categories = ['Technology', 'News', 'Finance', 'Design', 'Software', 'Engineering']
+const tags = ['Solar', 'Mining', 'Efficiency', 'ROI', 'Installation']
 
 // Next.js revalidation errors are normal when seeding the database without a server running
 // i.e. running `yarn seed` locally instead of using the admin UI within an active app
@@ -85,18 +90,6 @@ export const seed = async ({
       .map((collection) => payload.db.deleteVersions({ collection, req, where: {} })),
   )
 
-  payload.logger.info(`— Seeding demo author and user...`)
-
-  await payload.delete({
-    collection: 'users',
-    depth: 0,
-    where: {
-      email: {
-        equals: 'demo-author@example.com',
-      },
-    },
-  })
-
   payload.logger.info(`— Seeding media...`)
 
   const [image1Buffer, image2Buffer, image3Buffer, hero1Buffer] = await Promise.all([
@@ -114,15 +107,7 @@ export const seed = async ({
     ),
   ])
 
-  const [demoAuthor, image1Doc, image2Doc, image3Doc, imageHomeDoc] = await Promise.all([
-    payload.create({
-      collection: 'users',
-      data: {
-        name: 'Demo Author',
-        email: 'demo-author@example.com',
-        password: 'password',
-      },
-    }),
+  const [image1Doc, image2Doc, image3Doc, imageHomeDoc, , tagDocs] = await Promise.all([
     payload.create({
       collection: 'media',
       data: image1,
@@ -143,14 +128,27 @@ export const seed = async ({
       data: imageHero1,
       file: hero1Buffer,
     }),
-    categories.map((category) =>
-      payload.create({
-        collection: 'categories',
-        data: {
-          title: category,
-          slug: category,
-        },
-      }),
+    Promise.all(
+      categories.map((category) =>
+        payload.create({
+          collection: 'categories',
+          data: {
+            title: category,
+            slug: category,
+          },
+        }),
+      ),
+    ),
+    Promise.all(
+      tags.map((tag) =>
+        payload.create({
+          collection: 'tags',
+          data: {
+            title: tag,
+            slug: tag.toLowerCase(),
+          },
+        }),
+      ),
     ),
   ])
 
@@ -164,7 +162,10 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post1({ heroImage: image1Doc, blockImage: image2Doc, author: demoAuthor }),
+    data: {
+      ...post1({ heroImage: image1Doc, blockImage: image2Doc }),
+      tags: [tagDocs[0]!.id, tagDocs[1]!.id],
+    },
   })
 
   const post2Doc = await payload.create({
@@ -173,7 +174,10 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post2({ heroImage: image2Doc, blockImage: image3Doc, author: demoAuthor }),
+    data: {
+      ...post2({ heroImage: image2Doc, blockImage: image3Doc }),
+      tags: [tagDocs[2]!.id, tagDocs[3]!.id],
+    },
   })
 
   const post3Doc = await payload.create({
@@ -182,7 +186,10 @@ export const seed = async ({
     context: {
       disableRevalidate: true,
     },
-    data: post3({ heroImage: image3Doc, blockImage: image1Doc, author: demoAuthor }),
+    data: {
+      ...post3({ heroImage: image3Doc, blockImage: image1Doc }),
+      tags: [tagDocs[0]!.id, tagDocs[4]!.id],
+    },
   })
 
   // update each post with related posts
@@ -207,6 +214,37 @@ export const seed = async ({
       relatedPosts: [post1Doc.id, post2Doc.id],
     },
   })
+
+  payload.logger.info(`— Seeding products...`)
+
+  for (const product of sampleProducts({
+    image1: image1Doc,
+    image2: image2Doc,
+    image3: image3Doc,
+  })) {
+    const { locales, ...base } = product
+    const created = await payload.create({
+      collection: 'products',
+      depth: 0,
+      locale: 'en',
+      context: { disableRevalidate: true },
+      data: {
+        ...base,
+        ...locales.en,
+      },
+    })
+
+    for (const locale of ['ru', 'ro'] as const) {
+      await payload.update({
+        collection: 'products',
+        id: created.id,
+        depth: 0,
+        locale,
+        context: { disableRevalidate: true },
+        data: locales[locale],
+      })
+    }
+  }
 
   payload.logger.info(`— Seeding contact form...`)
 
@@ -242,6 +280,7 @@ export const seed = async ({
         defaultDescription:
           'Premium solar panel installation across Moldova. Residential and commercial renewable energy solutions.',
         phone: '+373 22 000 000',
+        whatsappPhone: '+373 60 000 000',
         email: 'info@btcsolar.md',
         phones: [{ number: '+373 22 000 000' }, { number: '+373 60 000 000' }],
         emails: [{ address: 'info@btcsolar.md' }, { address: 'sales@btcsolar.md' }],
@@ -313,6 +352,13 @@ export const seed = async ({
           },
           {
             link: {
+              type: 'custom',
+              label: 'Products',
+              url: '/products',
+            },
+          },
+          {
+            link: {
               type: 'reference',
               label: 'Contact',
               reference: {
@@ -372,6 +418,13 @@ export const seed = async ({
                   type: 'custom',
                   label: 'Gallery',
                   url: '/gallery',
+                },
+              },
+              {
+                link: {
+                  type: 'custom',
+                  label: 'Products',
+                  url: '/products',
                 },
               },
               {

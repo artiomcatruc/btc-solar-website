@@ -1,5 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
+import { adminOrEditor } from '@/access/roles'
+
 import { revalidateHomeStats } from './hooks/revalidateHomeStats'
 
 export const HomeStats: GlobalConfig = {
@@ -7,6 +9,7 @@ export const HomeStats: GlobalConfig = {
   label: 'Home Statistics',
   access: {
     read: () => true,
+    update: adminOrEditor,
   },
   fields: [
     {
@@ -21,12 +24,14 @@ export const HomeStats: GlobalConfig = {
             {
               name: 'value',
               type: 'text',
+              localized: true,
               required: true,
               admin: { width: '50%', description: 'e.g. 500+, 10MW, 98% — suffix in solar accent' },
             },
             {
               name: 'label',
               type: 'text',
+              localized: true,
               required: true,
               admin: { width: '50%', description: 'e.g. Projects Completed' },
             },

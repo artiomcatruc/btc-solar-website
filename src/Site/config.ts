@@ -1,5 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
+import { adminOrEditor } from '@/access/roles'
+
 import { revalidateSite } from './hooks/revalidateSite'
 
 export const Site: GlobalConfig = {
@@ -7,21 +9,25 @@ export const Site: GlobalConfig = {
   label: 'Site',
   access: {
     read: () => true,
+    update: adminOrEditor,
   },
   fields: [
     {
       name: 'siteName',
       type: 'text',
+      localized: true,
       defaultValue: 'BTC Solar',
     },
     {
       name: 'defaultTitle',
       type: 'text',
+      localized: true,
       admin: { description: 'Fallback document title when a page omits SEO title.' },
     },
     {
       name: 'defaultDescription',
       type: 'textarea',
+      localized: true,
     },
     {
       name: 'ogImage',
@@ -34,6 +40,14 @@ export const Site: GlobalConfig = {
         { name: 'phone', type: 'text', admin: { width: '50%' } },
         { name: 'email', type: 'email', admin: { width: '50%' } },
       ],
+    },
+    {
+      name: 'whatsappPhone',
+      type: 'text',
+      admin: {
+        description:
+          'WhatsApp number for the floating chat button. Falls back to phone if empty. Use international format, e.g. +373 60 000 000.',
+      },
     },
     {
       name: 'phones',
@@ -68,6 +82,7 @@ export const Site: GlobalConfig = {
     {
       name: 'address',
       type: 'textarea',
+      localized: true,
       admin: {
         description: 'Use line breaks for multi-line addresses.',
       },
@@ -75,6 +90,7 @@ export const Site: GlobalConfig = {
     {
       name: 'workingHours',
       type: 'textarea',
+      localized: true,
       admin: {
         description: 'One line per entry, e.g. Monday - Friday: 9:00 - 18:00',
       },
@@ -99,6 +115,7 @@ export const Site: GlobalConfig = {
             {
               name: 'label',
               type: 'text',
+              localized: true,
               admin: { width: '50%' },
               required: true,
             },

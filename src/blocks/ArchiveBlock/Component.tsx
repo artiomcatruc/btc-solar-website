@@ -6,6 +6,7 @@ import React from 'react'
 import RichText from '@/components/RichText'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
+import { getRequestLocale } from '@/utilities/getRequestLocale'
 import { cn } from '@/utilities/ui'
 
 export const ArchiveBlock: React.FC<
@@ -33,6 +34,7 @@ export const ArchiveBlock: React.FC<
       collection: 'posts',
       depth: 1,
       limit,
+      locale: await getRequestLocale(),
       ...(flattenedCategories && flattenedCategories.length > 0
         ? {
             where: {

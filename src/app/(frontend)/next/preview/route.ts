@@ -6,10 +6,13 @@ import { redirect } from 'next/navigation'
 import { NextRequest } from 'next/server'
 
 import configPromise from '@payload-config'
+import { isSafePreviewPath } from '@/utilities/isSafePreviewPath'
+import { verifyPreviewSignature } from '@/utilities/previewSignature'
 
 export type PreviewSearchParams = {
   path: string
-  previewSecret: string
+  exp: string
+  sig: string
 }
 
 export async function GET(req: NextRequest): Promise<Response> {
@@ -18,18 +21,19 @@ export async function GET(req: NextRequest): Promise<Response> {
   const { searchParams } = new URL(req.url)
 
   const path = searchParams.get('path')
-  const previewSecret = searchParams.get('previewSecret')
+  const exp = searchParams.get('exp')
+  const sig = searchParams.get('sig')
 
-  if (previewSecret !== process.env.PREVIEW_SECRET) {
-    return new Response('You are not allowed to preview this page', { status: 403 })
-  }
-
-  if (!path) {
+  if (!path || !exp || !sig) {
     return new Response('Insufficient search params', { status: 404 })
   }
 
-  if (!path.startsWith('/')) {
-    return new Response('This endpoint can only be used for relative previews', { status: 500 })
+  if (!isSafePreviewPath(path)) {
+    return new Response('This endpoint can only be used for relative previews', { status: 400 })
+  }
+
+  if (!verifyPreviewSignature(path, exp, sig)) {
+    return new Response('You are not allowed to preview this page', { status: 403 })
   }
 
   let user
@@ -50,8 +54,6 @@ export async function GET(req: NextRequest): Promise<Response> {
     draft.disable()
     return new Response('You are not allowed to preview this page', { status: 403 })
   }
-
-  // You can add additional checks here to see if the user is allowed to preview this page
 
   draft.enable()
 

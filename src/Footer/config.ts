@@ -1,5 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
+import { adminOrEditor } from '@/access/roles'
+
 import { link } from '@/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
 
@@ -7,11 +9,13 @@ export const Footer: GlobalConfig = {
   slug: 'footer',
   access: {
     read: () => true,
+    update: adminOrEditor,
   },
   fields: [
     {
       name: 'brandDescription',
       type: 'textarea',
+      localized: true,
       label: 'Brand description',
       defaultValue:
         'Premium solar energy solutions for homes and businesses across Moldova. Your trusted partner in renewable energy.',
@@ -33,6 +37,7 @@ export const Footer: GlobalConfig = {
         {
           name: 'heading',
           type: 'text',
+          localized: true,
           required: true,
         },
         {
@@ -55,6 +60,7 @@ export const Footer: GlobalConfig = {
     {
       name: 'copyrightText',
       type: 'text',
+      localized: true,
       admin: {
         placeholder: '© 2024 BTC Solar. All rights reserved.',
       },

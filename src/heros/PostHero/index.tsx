@@ -1,72 +1,105 @@
 import { formatDateTime } from 'src/utilities/formatDateTime'
 import React from 'react'
+import Link from 'next/link'
 
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
-import { formatAuthors } from '@/utilities/formatAuthors'
+import { cn } from '@/utilities/ui'
+import { getRequestLocale } from '@/utilities/getRequestLocale'
+import { buildPostsHref } from '@/utilities/postsQuery'
+
+type BadgeTone = 'solar' | 'eco' | 'graphite'
+
+const badgeToneClass: Record<BadgeTone, string> = {
+  solar: 'bg-solar-500 text-graphite-900',
+  eco: 'bg-eco-500 text-white',
+  graphite: 'bg-graphite-700 text-white',
+}
+
+const isTone = (value?: string | null): value is BadgeTone =>
+  value === 'solar' || value === 'eco' || value === 'graphite'
 
 export const PostHero: React.FC<{
   post: Post
-}> = ({ post }) => {
-  const { categories, heroImage, populatedAuthors, publishedAt, title } = post
+}> = async ({ post }) => {
+  const locale = await getRequestLocale()
+  const { categories, tags, heroImage, publishedAt, title } = post
 
-  const hasAuthors =
-    populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors) !== ''
+  const categoryList =
+    categories?.filter(
+      (category): category is Exclude<typeof category, number> =>
+        typeof category === 'object' && category !== null,
+    ) ?? []
+
+  const tagList =
+    tags?.filter(
+      (tag): tag is Exclude<typeof tag, number> => typeof tag === 'object' && tag !== null,
+    ) ?? []
 
   return (
-    <div className="relative -mt-[10.4rem] flex items-end">
-      <div className="container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
-        <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-2">
-          <div className="uppercase text-sm mb-6">
-            {categories?.map((category, index) => {
-              if (typeof category === 'object' && category !== null) {
-                const { title: categoryTitle } = category
+    <div className="relative flex min-h-[70vh] items-end overflow-hidden bg-graphite-900">
+      {heroImage && typeof heroImage !== 'string' ? (
+        <Media
+          fill
+          priority
+          pictureClassName="absolute inset-0 block size-full"
+          imgClassName="object-cover"
+          resource={heroImage}
+        />
+      ) : null}
+      <div className="absolute inset-0 bg-linear-to-t from-graphite-950/95 via-graphite-900/55 to-graphite-900/20" />
 
-                const titleToUse = categoryTitle || 'Untitled category'
-
-                const isLast = index === categories.length - 1
-
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 pt-32 sm:px-6 lg:px-8">
+        <div className="max-w-3xl text-white">
+          {categoryList.length > 0 ? (
+            <div className="mb-6 flex flex-wrap gap-2">
+              {categoryList.map((category) => {
+                const tone = isTone(category.badgeTone) ? category.badgeTone : 'eco'
                 return (
-                  <React.Fragment key={index}>
-                    {titleToUse}
-                    {!isLast && <React.Fragment>, &nbsp;</React.Fragment>}
-                  </React.Fragment>
+                  <Link
+                    key={category.id}
+                    href={buildPostsHref({
+                      category: category.slug ?? undefined,
+                      locale,
+                    })}
+                    className={cn(
+                      'rounded-full px-4 py-1.5 text-sm font-semibold transition-opacity hover:opacity-90',
+                      badgeToneClass[tone],
+                    )}
+                  >
+                    {category.title}
+                  </Link>
                 )
-              }
-              return null
-            })}
-          </div>
+              })}
+            </div>
+          ) : (
+            <span className="mb-6 inline-block text-sm font-semibold uppercase tracking-wider text-solar-400">
+              Blog
+            </span>
+          )}
 
-          <div className="">
-            <h1 className="mb-6 text-3xl md:text-5xl lg:text-6xl">{title}</h1>
-          </div>
+          <h1 className="mb-6 text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">{title}</h1>
 
-          <div className="flex flex-col md:flex-row gap-4 md:gap-16">
-            {hasAuthors && (
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm">Author</p>
-
-                  <p>{formatAuthors(populatedAuthors)}</p>
-                </div>
+          <div className="flex flex-wrap items-center gap-4 text-sm text-white/80">
+            {publishedAt ? (
+              <time dateTime={publishedAt}>{formatDateTime(publishedAt)}</time>
+            ) : null}
+            {tagList.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {tagList.map((tag) => (
+                  <Link
+                    key={tag.id}
+                    href={buildPostsHref({ tag: tag.slug ?? undefined, locale })}
+                    className="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+                  >
+                    #{tag.title}
+                  </Link>
+                ))}
               </div>
-            )}
-            {publishedAt && (
-              <div className="flex flex-col gap-1">
-                <p className="text-sm">Date Published</p>
-
-                <time dateTime={publishedAt}>{formatDateTime(publishedAt)}</time>
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
-      </div>
-      <div className="min-h-[80vh] select-none">
-        {heroImage && typeof heroImage !== 'string' && (
-          <Media fill priority imgClassName="-z-10 object-cover" resource={heroImage} />
-        )}
-        <div className="absolute pointer-events-none left-0 bottom-0 w-full h-1/2 bg-linear-to-t from-black to-transparent" />
       </div>
     </div>
   )

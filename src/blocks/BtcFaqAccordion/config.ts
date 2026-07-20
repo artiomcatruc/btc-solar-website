@@ -8,11 +8,13 @@ export const BtcFaqAccordion: Block = {
     {
       name: 'eyebrow',
       type: 'text',
+      localized: true,
       defaultValue: 'FAQ',
     },
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
       defaultValue: 'Frequently Asked Questions',
     },

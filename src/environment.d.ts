@@ -7,6 +7,10 @@ declare global {
       VERCEL_PROJECT_PRODUCTION_URL: string
       CRON_SECRET: string
       PREVIEW_SECRET: string
+      ENABLE_SEED?: string
+      // Cloudflare Turnstile — optional; both required to enforce captcha
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY?: string
+      TURNSTILE_SECRET_KEY?: string
       // Cloudflare R2 — optional, enables cloud media storage when set
       R2_BUCKET?: string
       R2_ENDPOINT?: string

@@ -11,11 +11,13 @@ export const BtcTestimonialsGrid: Block = {
     {
       name: 'eyebrow',
       type: 'text',
+      localized: true,
       defaultValue: 'Testimonials',
     },
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
       defaultValue: 'What Our Clients Say',
     },

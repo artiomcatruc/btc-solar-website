@@ -31,11 +31,13 @@ export const BtcCtaBanner: Block = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
     },
     {
       name: 'description',
       type: 'textarea',
+      localized: true,
     },
     linkGroup({
       appearances: false,

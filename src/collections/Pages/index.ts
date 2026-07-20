@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { hero } from '@/heros/config'
 import { slugField } from 'payload'
-import { authenticated } from '../../access/authenticated'
+import { adminOrEditor } from '../../access/roles'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '../../blocks/ArchiveBlock/config'
 import { BtcAboutHero } from '../../blocks/BtcAboutHero/config'
@@ -38,10 +38,10 @@ import {
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: adminOrEditor,
+    delete: adminOrEditor,
     read: authenticatedOrPublished,
-    update: authenticated,
+    update: adminOrEditor,
   },
   // This config controls what's populated by default when a page is referenced
   // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property
@@ -72,6 +72,7 @@ export const Pages: CollectionConfig<'pages'> = {
     {
       name: 'title',
       type: 'text',
+      localized: true,
       required: true,
     },
     {
