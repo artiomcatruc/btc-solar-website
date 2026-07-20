@@ -1,7 +1,10 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  // Split into chunks so Postgres errors are not truncated by CI logs (~84KB single query).
+  // Phase 1
   await db.execute(sql`
+
    CREATE TABLE "pages_hero_links_locales" (
   	"link_label" varchar,
   	"id" serial PRIMARY KEY NOT NULL,
@@ -423,8 +426,23 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"_parent_id" integer NOT NULL
   );
   
-  -- "tags" already exists (created via push); localize title via tags_locales only
-  
+  -- tags was historically created only via local drizzle push, never in 20260708.
+  -- Prod (migrate-only) therefore has no tags table — create it before tags_locales / FKs.
+  CREATE TABLE IF NOT EXISTS "tags" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"title" varchar,
+  	"generate_slug" boolean DEFAULT true,
+  	"slug" varchar NOT NULL,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  );
+  DO $mig$ BEGIN
+    ALTER TABLE "tags" ADD COLUMN "title" varchar;
+  EXCEPTION WHEN duplicate_column THEN NULL; END $mig$;
+  CREATE UNIQUE INDEX IF NOT EXISTS "tags_slug_idx" ON "tags" USING btree ("slug");
+  CREATE INDEX IF NOT EXISTS "tags_updated_at_idx" ON "tags" USING btree ("updated_at");
+  CREATE INDEX IF NOT EXISTS "tags_created_at_idx" ON "tags" USING btree ("created_at");
+
   CREATE TABLE "tags_locales" (
   	"title" varchar NOT NULL,
   	"id" serial PRIMARY KEY NOT NULL,
@@ -557,7 +575,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "posts_locales" ADD COLUMN "content" jsonb;
   ALTER TABLE "_posts_v_locales" ADD COLUMN "version_title" varchar;
   ALTER TABLE "_posts_v_locales" ADD COLUMN "version_content" jsonb;
-  -- tags_id columns may already exist from push; add only if missing
+  `)
+
+  // Phase 2
+  await db.execute(sql`
+-- tags_id columns may already exist from push; add only if missing
   DO $mig$ BEGIN
     ALTER TABLE "posts_rels" ADD COLUMN "tags_id" integer;
   EXCEPTION WHEN duplicate_column THEN NULL; END $mig$;
@@ -706,7 +728,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX IF NOT EXISTS "posts_rels_tags_id_idx" ON "posts_rels" USING btree ("tags_id");
   CREATE INDEX IF NOT EXISTS "_posts_v_rels_tags_id_idx" ON "_posts_v_rels" USING btree ("tags_id");
   CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_tags_id_idx" ON "payload_locked_documents_rels" USING btree ("tags_id");
-  -- Copy existing content into default locale (en) BEFORE dropping source columns
+  `)
+
+  // Phase 3
+  await db.execute(sql`
+-- Copy existing content into default locale (en) BEFORE dropping source columns
 
   INSERT INTO "pages_hero_links_locales" ("_parent_id", "_locale", "link_label")
   SELECT id, 'en', "link_label"
@@ -1307,7 +1333,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "media" DROP COLUMN "alt";
   ALTER TABLE "media" DROP COLUMN "caption";
   ALTER TABLE "categories" DROP COLUMN "title";
-  ALTER TABLE "tags" DROP COLUMN "title";
+  DO $mig$ BEGIN
+    ALTER TABLE "tags" DROP COLUMN "title";
+  EXCEPTION WHEN undefined_column THEN NULL; END $mig$;
   ALTER TABLE "services" DROP COLUMN "title";
   ALTER TABLE "services" DROP COLUMN "summary";
   ALTER TABLE "testimonials" DROP COLUMN "quote";
@@ -1334,7 +1362,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "footer_columns_links" DROP COLUMN "link_label";
   ALTER TABLE "footer_columns" DROP COLUMN "heading";
   ALTER TABLE "footer" DROP COLUMN "brand_description";
-  ALTER TABLE "footer" DROP COLUMN "copyright_text";`)
+  ALTER TABLE "footer" DROP COLUMN "copyright_text";
+  `)
+
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
