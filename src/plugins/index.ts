@@ -10,6 +10,7 @@ import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
+import { adminOrEditor, isAdminOrEditor } from '@/access/roles'
 import { formSubmissionOverrides } from '@/form-submissions/overrides'
 import { Page, Post, Product } from '@/payload-types'
 import { parseLocale } from '@/utilities/locale'
@@ -70,12 +71,23 @@ export const plugins: Plugin[] = [
       payment: false,
     },
     formOverrides: {
+      access: {
+        // Public read still needed so storefront can render form fields.
+        // Sensitive notification config is stripped via field access below.
+        read: () => true,
+        create: adminOrEditor,
+        update: adminOrEditor,
+        delete: adminOrEditor,
+      },
       // @ts-expect-error - mapped field admin overrides don't narrow cleanly
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
           if ('name' in field && field.name === 'emails') {
             return {
               ...field,
+              access: {
+                read: ({ req: { user } }) => isAdminOrEditor(user),
+              },
               admin: {
                 ...field.admin,
                 hidden: true,

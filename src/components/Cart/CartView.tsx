@@ -1,15 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { formatPrice } from '@/cart/formatPrice'
 import { useCart } from '@/cart/CartProvider'
+import { HoneypotField } from '@/components/HoneypotField'
 import { Media } from '@/components/Media'
+import { Turnstile } from '@/components/Turnstile'
 import type { Product } from '@/payload-types'
 import { getClientSideURL } from '@/utilities/getURL'
 import { localizeHref, type Locale } from '@/utilities/locale'
+import { publicSubmitHeaders } from '@/utilities/publicSubmitHeaders'
 import { t } from '@/utilities/uiMessages'
 import { cn } from '@/utilities/ui'
 
@@ -31,6 +34,12 @@ export const CartView: React.FC<Props> = ({ locale }) => {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
+  const onTurnstileToken = useCallback((token: string | null) => {
+    setTurnstileToken(token)
+  }, [])
 
   const {
     register,
@@ -102,12 +111,16 @@ export const CartView: React.FC<Props> = ({ locale }) => {
       setSubmitError(t(locale, 'cartMixedCurrency'))
       return
     }
+    if (turnstileRequired && !turnstileToken) {
+      setSubmitError(t(locale, 'cartCaptchaRequired'))
+      return
+    }
 
     setSubmitting(true)
     try {
       const res = await fetch(`${getClientSideURL()}/api/orders`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: publicSubmitHeaders({ honeypot, turnstileToken }),
         body: JSON.stringify({
           customerName: values.customerName.trim(),
           phone: values.phone.trim(),
@@ -330,11 +343,14 @@ export const CartView: React.FC<Props> = ({ locale }) => {
             />
           </div>
 
+          <HoneypotField value={honeypot} onChange={setHoneypot} />
+          <Turnstile className="mt-2" onToken={onTurnstileToken} />
+
           {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
 
           <button
             type="submit"
-            disabled={submitting || mixedCurrency}
+            disabled={submitting || mixedCurrency || (turnstileRequired && !turnstileToken)}
             className="inline-flex w-full items-center justify-center rounded-full bg-solar-500 px-6 py-3 text-sm font-semibold text-graphite-900 transition-colors hover:bg-solar-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting ? t(locale, 'cartSubmitting') : t(locale, 'cartSubmit')}

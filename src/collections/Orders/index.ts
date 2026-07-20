@@ -3,7 +3,9 @@ import type { CollectionConfig } from 'payload'
 import { adminOrEditor } from '../../access/roles'
 import { anyone } from '../../access/anyone'
 import { reserveStock } from './decrementStock'
+import { guardPublicCreate } from './guardPublicCreate'
 import { prepareOrder } from './prepareOrder'
+import { restoreStock } from './restoreStock'
 
 export const Orders: CollectionConfig<'orders'> = {
   slug: 'orders',
@@ -25,9 +27,9 @@ export const Orders: CollectionConfig<'orders'> = {
     description: 'Storefront orders. Contact the customer and arrange payment offline.',
   },
   hooks: {
-    beforeValidate: [prepareOrder],
-    // Reserve stock before insert so a failed create rolls back the decrement.
-    beforeChange: [reserveStock],
+    beforeValidate: [guardPublicCreate, prepareOrder],
+    // Reserve on create / restore on cancel — same DB transaction as the write.
+    beforeChange: [reserveStock, restoreStock],
   },
   fields: [
     {
@@ -57,12 +59,14 @@ export const Orders: CollectionConfig<'orders'> = {
           type: 'text',
           required: true,
           label: 'Name',
+          maxLength: 120,
           admin: { width: '50%' },
         },
         {
           name: 'phone',
           type: 'text',
           required: true,
+          maxLength: 40,
           admin: { width: '50%' },
         },
       ],

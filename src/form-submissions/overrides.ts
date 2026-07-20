@@ -1,6 +1,7 @@
 import type { Field } from 'payload'
 
 import { adminOrEditor } from '@/access/roles'
+import { guardPublicCreate } from './guardPublicCreate'
 import { populateSubmissionSummary } from './populateSummary'
 
 const readOnlySummaryAdmin = {
@@ -25,6 +26,7 @@ export const formSubmissionOverrides = {
     read: adminOrEditor,
   },
   hooks: {
+    beforeValidate: [guardPublicCreate],
     beforeChange: [populateSubmissionSummary],
   },
   fields: ({ defaultFields }: { defaultFields: Field[] }): Field[] => {

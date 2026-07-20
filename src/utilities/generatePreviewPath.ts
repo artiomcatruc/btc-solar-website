@@ -1,7 +1,7 @@
-import { PreviewSearchParams } from '@/app/(frontend)/next/preview/route'
 import { PayloadRequest, CollectionSlug } from 'payload'
 
 import { defaultLocale } from '@/utilities/locale'
+import { signPreviewPath } from '@/utilities/previewSignature'
 
 const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
   posts: '/posts',
@@ -27,12 +27,15 @@ export const generatePreviewPath = ({ collection, slug }: Props) => {
       ? `/${defaultLocale}`
       : `/${defaultLocale}${prefix}/${encodedSlug}`
 
+  const signed = signPreviewPath(path)
+  if (!signed) return null
+
+  // HMAC signature — PREVIEW_SECRET itself never appears in the URL.
   const encodedParams = new URLSearchParams({
-    path,
-    previewSecret: process.env.PREVIEW_SECRET || '',
-  } satisfies PreviewSearchParams)
+    path: signed.path,
+    exp: signed.exp,
+    sig: signed.sig,
+  })
 
-  const url = `/next/preview?${encodedParams.toString()}`
-
-  return url
+  return `/next/preview?${encodedParams.toString()}`
 }

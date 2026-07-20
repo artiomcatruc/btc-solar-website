@@ -23,6 +23,7 @@ WORKDIR /app
 ARG PAYLOAD_SECRET
 ARG NEXT_PUBLIC_SERVER_URL
 ARG R2_PUBLIC_URL
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
 # Needed at build time for next.config.ts images.remotePatterns
@@ -30,6 +31,7 @@ ENV R2_PUBLIC_URL=$R2_PUBLIC_URL
 # Skip DB-dependent static generation — postgres host is unavailable during CI Docker build
 ENV NEXT_BUILD_SKIP_DB=true
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

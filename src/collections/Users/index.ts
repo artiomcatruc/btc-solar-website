@@ -16,7 +16,13 @@ export const Users: CollectionConfig = {
     defaultColumns: ['name', 'email', 'roles'],
     useAsTitle: 'name',
   },
-  auth: true,
+  auth: {
+    cookies: {
+      // Force Secure on prod so the auth cookie is never sent over plain HTTP.
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Lax',
+    },
+  },
   hooks: {
     beforeChange: [
       async ({ data, operation, req }) => {
