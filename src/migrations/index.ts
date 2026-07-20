@@ -4,6 +4,7 @@ import * as migration_20260719_121928_add_site_whatsapp_phone from './20260719_1
 import * as migration_20260719_123413_add_leads_summary_fields from './20260719_123413_add_leads_summary_fields';
 import * as migration_20260719_124716_add_products_collection from './20260719_124716_add_products_collection';
 import * as migration_20260719_134505_add_orders_collection from './20260719_134505_add_orders_collection';
+import * as migration_20260720_224948_add_products_seo_meta from './20260720_224948_add_products_seo_meta';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260719_134505_add_orders_collection.up,
     down: migration_20260719_134505_add_orders_collection.down,
-    name: '20260719_134505_add_orders_collection'
+    name: '20260719_134505_add_orders_collection',
+  },
+  {
+    up: migration_20260720_224948_add_products_seo_meta.up,
+    down: migration_20260720_224948_add_products_seo_meta.down,
+    name: '20260720_224948_add_products_seo_meta'
   },
 ];

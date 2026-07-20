@@ -5,6 +5,7 @@ import { PageRange } from '@/components/PageRange'
 import { Pagination } from '@/components/Pagination'
 import { PostsFilterBar } from '@/components/Posts/PostsFilterBar'
 import { buildPostsWhere, POSTS_PER_PAGE } from '@/utilities/postsQuery'
+import { buildLocaleAlternates, withBrandTitle } from '@/utilities/seo'
 import { parseLocale } from '@/utilities/locale'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -161,9 +162,17 @@ export default async function Page({
   )
 }
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata({
+  params: paramsPromise,
+}: {
+  params: Promise<{ locale?: string }>
+}): Promise<Metadata> {
+  const { locale: localeParam } = await paramsPromise
+  const locale = parseLocale(localeParam)
+
   return {
-    title: 'Blog | BTC Solar',
+    alternates: buildLocaleAlternates('/posts', locale),
     description: 'News, solar insights and project updates from BTC Solar.',
+    title: withBrandTitle('Blog'),
   }
 }

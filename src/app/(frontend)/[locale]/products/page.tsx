@@ -1,6 +1,7 @@
 import type { Metadata } from 'next/types'
 
 import { ProductCard } from '@/components/Products/ProductCard'
+import { buildLocaleAlternates, withBrandTitle } from '@/utilities/seo'
 import { parseLocale } from '@/utilities/locale'
 import { t } from '@/utilities/uiMessages'
 import configPromise from '@payload-config'
@@ -77,9 +78,12 @@ export default async function Page({ params: paramsPromise }: Args) {
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { locale: localeParam } = await paramsPromise
   const locale = parseLocale(localeParam)
+  const title = t(locale, 'productsTitle')
+  const description = t(locale, 'productsLead')
 
   return {
-    title: `${t(locale, 'productsTitle')} | BTC Solar`,
-    description: t(locale, 'productsLead'),
+    alternates: buildLocaleAlternates('/products', locale),
+    description,
+    title: withBrandTitle(title),
   }
 }

@@ -11,17 +11,27 @@ import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
 import { formSubmissionOverrides } from '@/form-submissions/overrides'
-import { Page, Post } from '@/payload-types'
-import { getServerSideURL } from '@/utilities/getURL'
+import { Page, Post, Product } from '@/payload-types'
+import { parseLocale } from '@/utilities/locale'
+import { absoluteUrl, collectionInternalPath, SITE_BRAND, withBrandTitle } from '@/utilities/seo'
 
-const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
+const generateTitle: GenerateTitle<Post | Page | Product> = ({ doc }) => {
+  return withBrandTitle(doc?.title) || SITE_BRAND
 }
 
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
-  const url = getServerSideURL()
+const generateURL: GenerateURL<Post | Page | Product> = ({ doc, locale, collectionSlug }) => {
+  const loc = parseLocale(locale)
+  const slug = typeof doc?.slug === 'string' ? doc.slug : null
 
-  return doc?.slug ? `${url}/${doc.slug}` : url
+  const collection =
+    collectionSlug === 'posts'
+      ? 'posts'
+      : collectionSlug === 'products'
+        ? 'products'
+        : 'pages'
+
+  const path = collectionInternalPath(collection, slug)
+  return absoluteUrl(`/${loc}${path === '/' ? '' : path}`)
 }
 
 export const plugins: Plugin[] = [

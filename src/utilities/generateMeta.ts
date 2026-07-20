@@ -1,9 +1,17 @@
 import type { Metadata } from 'next'
 
-import type { Config, Media, Page, Post } from '../payload-types'
+import type { Config, Media, Page, Post, Product } from '../payload-types'
 
+import { type Locale } from '@/utilities/locale'
 import { getServerSideURL } from './getURL'
 import { mergeOpenGraph } from './mergeOpenGraph'
+import {
+  buildLocaleAlternates,
+  collectionInternalPath,
+  SITE_DEFAULT_DESCRIPTION,
+  type SeoCollection,
+  withBrandTitle,
+} from './seo'
 
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
@@ -12,7 +20,6 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
 
   if (image && typeof image === 'object' && 'url' in image) {
     const ogUrl = image.sizes?.og?.url
-
     const raw = ogUrl || image.url
     url = raw?.startsWith('http') ? raw : serverUrl + raw
   }
@@ -20,30 +27,47 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   return url
 }
 
+type DocWithMeta = Partial<Page> | Partial<Post> | Partial<Product> | null
+
 export const generateMeta = async (args: {
-  doc: Partial<Page> | Partial<Post> | null
+  doc: DocWithMeta
+  locale: Locale
+  collection: SeoCollection
+  /** Fallback when doc is missing (404 metadata still needs a canonical path). */
+  slug?: string | null
 }): Promise<Metadata> => {
-  const { doc } = args
+  const { doc, locale, collection } = args
 
-  const ogImage = getImageURL(doc?.meta?.image)
+  const metaImage =
+    doc && 'meta' in doc && doc.meta && typeof doc.meta === 'object'
+      ? (doc.meta as { image?: Media | number | null; title?: string | null; description?: string | null })
+      : null
 
-  const title = doc?.meta?.title
-    ? doc?.meta?.title + ' | Payload Website Template'
-    : 'Payload Website Template'
+  const ogImage = getImageURL(
+    metaImage?.image ??
+      (doc && 'image' in doc ? (doc.image as Media | number | null) : null) ??
+      (doc && 'heroImage' in doc ? (doc.heroImage as Media | number | null) : null),
+  )
+
+  const title = withBrandTitle(metaImage?.title || doc?.title)
+  const description =
+    metaImage?.description ||
+    (doc && 'summary' in doc ? doc.summary : null) ||
+    SITE_DEFAULT_DESCRIPTION
+
+  const slug = args.slug ?? (typeof doc?.slug === 'string' ? doc.slug : null)
+  const internalPath = collectionInternalPath(collection, slug)
+  const alternates = buildLocaleAlternates(internalPath, locale)
+  const canonical = typeof alternates.canonical === 'string' ? alternates.canonical : undefined
 
   return {
-    description: doc?.meta?.description,
+    alternates,
+    description,
     openGraph: mergeOpenGraph({
-      description: doc?.meta?.description || '',
-      images: ogImage
-        ? [
-            {
-              url: ogImage,
-            },
-          ]
-        : undefined,
+      description: description || '',
+      images: ogImage ? [{ url: ogImage }] : undefined,
       title,
-      url: Array.isArray(doc?.slug) ? doc?.slug.join('/') : '/',
+      url: canonical,
     }),
     title,
   }

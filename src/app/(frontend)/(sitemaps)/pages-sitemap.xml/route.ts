@@ -35,11 +35,11 @@ const getPagesSitemap = unstable_cache(
 
     const defaultSitemap = locales.flatMap((locale) => [
       {
-        loc: `${SITE_URL}/${locale}/search`,
+        loc: `${SITE_URL}/${locale}/posts`,
         lastmod: dateFallback,
       },
       {
-        loc: `${SITE_URL}/${locale}/posts`,
+        loc: `${SITE_URL}/${locale}/products`,
         lastmod: dateFallback,
       },
     ])

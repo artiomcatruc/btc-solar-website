@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 import type { Product } from '@/payload-types'
@@ -5,8 +6,8 @@ import type { Product } from '@/payload-types'
 import { formatPrice } from '@/cart/formatPrice'
 import { AddToCartButton } from '@/components/Cart/AddToCartButton'
 import { Media } from '@/components/Media'
+import { localizeHref, type Locale } from '@/utilities/locale'
 import { cn } from '@/utilities/ui'
-import type { Locale } from '@/utilities/locale'
 import { t } from '@/utilities/uiMessages'
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
 export const ProductCard: React.FC<Props> = ({ product, locale }) => {
   const unavailable = product.soldOut || product.quantity <= 0
   const image = typeof product.image === 'object' ? product.image : null
+  const href = localizeHref(`/products/${product.slug}`, locale)
 
   return (
     <article
@@ -25,7 +27,7 @@ export const ProductCard: React.FC<Props> = ({ product, locale }) => {
         unavailable && 'opacity-90',
       )}
     >
-      <div className="relative aspect-16/10 overflow-hidden bg-graphite-100">
+      <Link href={href} className="relative aspect-16/10 overflow-hidden bg-graphite-100">
         {image ? (
           <Media
             fill
@@ -49,11 +51,15 @@ export const ProductCard: React.FC<Props> = ({ product, locale }) => {
             {t(locale, 'soldOut')}
           </span>
         ) : null}
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col p-6">
         <div className="mb-3 flex items-start justify-between gap-3">
-          <h3 className="text-xl font-bold text-graphite-900">{product.title}</h3>
+          <h3 className="text-xl font-bold text-graphite-900">
+            <Link className="transition-colors group-hover:text-solar-600" href={href}>
+              {product.title}
+            </Link>
+          </h3>
           <p className="shrink-0 text-lg font-semibold text-solar-600">
             {formatPrice(product.price, product.currency, locale)}
           </p>

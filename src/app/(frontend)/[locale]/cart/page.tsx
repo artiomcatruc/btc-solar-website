@@ -50,5 +50,9 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   return {
     title: `${t(locale, 'cartTitle')} | BTC Solar`,
     description: t(locale, 'cartLead'),
+    robots: {
+      index: false,
+      follow: false,
+    },
   }
 }

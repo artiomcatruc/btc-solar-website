@@ -11,8 +11,11 @@ import Link from 'next/link'
 
 import type { Post } from '@/payload-types'
 
+import { JsonLd } from '@/components/JsonLd'
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { getCachedSite } from '@/utilities/getSite'
+import { absoluteUrl } from '@/utilities/seo'
 import { locales, localizeHref, parseLocale, type Locale } from '@/utilities/locale'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
@@ -57,15 +60,45 @@ export default async function Post({ params: paramsPromise }: Args) {
   const locale = parseLocale(localeParam)
   const decodedSlug = decodeURIComponent(slug)
   const url = `/${locale}/posts/${decodedSlug}`
-  const post = await queryPostBySlug({ locale, slug: decodedSlug })
+  const [post, site] = await Promise.all([
+    queryPostBySlug({ locale, slug: decodedSlug }),
+    getCachedSite(locale),
+  ])
 
   if (!post) return <PayloadRedirects locale={locale} url={url} />
+
+  const heroImage =
+    typeof post.heroImage === 'object' && post.heroImage
+      ? post.heroImage
+      : typeof post.meta?.image === 'object' && post.meta.image
+        ? post.meta.image
+        : null
+  const imageUrl = heroImage?.sizes?.og?.url || heroImage?.url
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.meta?.description || undefined,
+    image: imageUrl ? [absoluteUrl(imageUrl)] : undefined,
+    datePublished: post.publishedAt || post.createdAt,
+    dateModified: post.updatedAt,
+    mainEntityOfPage: absoluteUrl(url),
+    author: {
+      '@type': 'Organization',
+      name: site?.siteName || 'BTC Solar',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: site?.siteName || 'BTC Solar',
+    },
+  }
 
   return (
     <article className="bg-white pb-24">
       <PageClient />
       <PayloadRedirects disableNotFound locale={locale} url={url} />
       {draft && <LivePreviewListener />}
+      <JsonLd data={articleJsonLd} />
 
       <PostHero post={post} />
 
@@ -104,7 +137,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const decodedSlug = decodeURIComponent(slug)
   const post = await queryPostBySlug({ locale, slug: decodedSlug })
 
-  return generateMeta({ doc: post })
+  return generateMeta({ collection: 'posts', doc: post, locale, slug: decodedSlug })
 }
 
 const queryPostBySlug = cache(async ({ locale, slug }: { locale: Locale; slug: string }) => {

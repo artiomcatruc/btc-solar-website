@@ -1342,6 +1342,14 @@ export interface Product {
    * Manual override. Also set automatically when quantity is 0.
    */
   soldOut?: boolean | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
   /**
    * Lower sorts first on the storefront.
    */
@@ -2177,6 +2185,13 @@ export interface ProductsSelect<T extends boolean = true> {
   currency?: T;
   quantity?: T;
   soldOut?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
   sort?: T;
   generateSlug?: T;
   slug?: T;
