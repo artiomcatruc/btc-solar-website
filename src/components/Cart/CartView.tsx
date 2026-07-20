@@ -29,7 +29,7 @@ type Props = {
 
 export const CartView: React.FC<Props> = ({ locale }) => {
   const { items, ready, setQuantity, removeItem, clear } = useCart()
-  const [products, setProducts] = useState<Product[]>([])
+  const [fetchedProducts, setFetchedProducts] = useState<Product[]>([])
   const [loadingProducts, setLoadingProducts] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -50,13 +50,13 @@ export const CartView: React.FC<Props> = ({ locale }) => {
 
   const productIds = useMemo(() => items.map((item) => item.productId).sort((a, b) => a - b), [items])
   const productIdsKey = productIds.join(',')
+  const products = useMemo(
+    () => (productIdsKey ? fetchedProducts : []),
+    [productIdsKey, fetchedProducts],
+  )
 
   useEffect(() => {
-    if (!ready) return
-    if (!productIdsKey) {
-      setProducts([])
-      return
-    }
+    if (!ready || !productIdsKey) return
 
     let cancelled = false
     const load = async () => {
@@ -72,9 +72,9 @@ export const CartView: React.FC<Props> = ({ locale }) => {
         })
         const res = await fetch(`${getClientSideURL()}/api/products?${params.toString()}`)
         const data = (await res.json()) as { docs?: Product[] }
-        if (!cancelled) setProducts(data.docs || [])
+        if (!cancelled) setFetchedProducts(data.docs || [])
       } catch {
-        if (!cancelled) setProducts([])
+        if (!cancelled) setFetchedProducts([])
       } finally {
         if (!cancelled) setLoadingProducts(false)
       }
@@ -84,7 +84,7 @@ export const CartView: React.FC<Props> = ({ locale }) => {
     return () => {
       cancelled = true
     }
-  }, [ready, productIdsKey, locale])
+  }, [ready, productIdsKey, productIds, locale])
 
   const lines = useMemo(() => {
     return items

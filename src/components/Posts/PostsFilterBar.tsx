@@ -50,10 +50,12 @@ export const PostsFilterBar: React.FC<Props> = ({
   const locale = getLocaleFromPathname(pathname) || defaultLocale
   const [isPending, startTransition] = useTransition()
   const [query, setQuery] = useState(activeQuery)
+  const [prevActiveQuery, setPrevActiveQuery] = useState(activeQuery)
 
-  useEffect(() => {
+  if (activeQuery !== prevActiveQuery) {
+    setPrevActiveQuery(activeQuery)
     setQuery(activeQuery)
-  }, [activeQuery])
+  }
 
   const navigate = (next: { category?: string; tag?: string; q?: string }) => {
     startTransition(() => {

@@ -6,7 +6,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useState,
   useSyncExternalStore,
 } from 'react'
 
@@ -38,6 +37,8 @@ const emit = () => {
 const getSnapshot = () => memoryCart
 const emptyCart = { items: [] as CartItem[] }
 const getServerSnapshot = () => emptyCart
+const getReadySnapshot = () => hydrated
+const getReadyServerSnapshot = () => false
 
 const subscribe = (listener: () => void) => {
   listeners.add(listener)
@@ -53,16 +54,16 @@ const setCartItems = (items: CartItem[]) => {
 }
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [ready, setReady] = useState(false)
   const cart = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  const ready = useSyncExternalStore(subscribe, getReadySnapshot, getReadyServerSnapshot)
 
   useEffect(() => {
     if (!hydrated) {
       memoryCart = readCart()
       hydrated = true
-      emit()
     }
-    setReady(true)
+    // Notify subscribers after external localStorage sync — no React setState here.
+    emit()
   }, [])
 
   const addItem = useCallback((productId: number, quantity = 1) => {
