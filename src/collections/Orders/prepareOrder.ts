@@ -22,6 +22,37 @@ const productIdOf = (value: IncomingItem['product']): number | null => {
   return null
 }
 
+/** Merge duplicate product lines so stock checks use total qty per product. */
+const aggregateQuantities = (rawItems: IncomingItem[]): Map<number, number> => {
+  const qtyByProduct = new Map<number, number>()
+
+  for (const item of rawItems) {
+    const productId = productIdOf(item.product)
+    const quantity = Math.floor(Number(item.quantity))
+
+    if (!productId) {
+      throw new APIError('Each order item needs a product.', 400)
+    }
+    if (!Number.isFinite(quantity) || quantity < 1) {
+      throw new APIError('Quantity must be at least 1.', 400)
+    }
+
+    qtyByProduct.set(productId, (qtyByProduct.get(productId) ?? 0) + quantity)
+  }
+
+  for (const quantity of qtyByProduct.values()) {
+    if (quantity > MAX_QTY_PER_ITEM) {
+      throw new APIError(`Quantity cannot exceed ${MAX_QTY_PER_ITEM}.`, 400)
+    }
+  }
+
+  if (qtyByProduct.size > MAX_ITEMS) {
+    throw new APIError(`Too many line items (max ${MAX_ITEMS}).`, 400)
+  }
+
+  return qtyByProduct
+}
+
 export const prepareOrder: CollectionBeforeValidateHook = async ({ data, operation, req }) => {
   if (!data) return data
 
@@ -36,28 +67,13 @@ export const prepareOrder: CollectionBeforeValidateHook = async ({ data, operati
   if (rawItems.length === 0) {
     throw new APIError('Cart is empty.', 400)
   }
-  if (rawItems.length > MAX_ITEMS) {
-    throw new APIError(`Too many line items (max ${MAX_ITEMS}).`, 400)
-  }
 
+  const qtyByProduct = aggregateQuantities(rawItems)
   const prepared = []
   let total = 0
   let currency: Product['currency'] | null = null
 
-  for (const item of rawItems) {
-    const productId = productIdOf(item.product)
-    const quantity = Math.floor(Number(item.quantity))
-
-    if (!productId) {
-      throw new APIError('Each order item needs a product.', 400)
-    }
-    if (!Number.isFinite(quantity) || quantity < 1) {
-      throw new APIError('Quantity must be at least 1.', 400)
-    }
-    if (quantity > MAX_QTY_PER_ITEM) {
-      throw new APIError(`Quantity cannot exceed ${MAX_QTY_PER_ITEM}.`, 400)
-    }
-
+  for (const [productId, quantity] of qtyByProduct) {
     const product = await req.payload.findByID({
       collection: 'products',
       id: productId,

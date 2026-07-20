@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { APIError } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -9,19 +10,32 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
+import { adminOrEditor } from '../access/roles'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+const MAX_FILE_BYTES = 10_485_760 // 10MB
 
 export const Media: CollectionConfig = {
   slug: 'media',
   folders: true,
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: adminOrEditor,
+    delete: adminOrEditor,
     read: anyone,
-    update: authenticated,
+    update: adminOrEditor,
+  },
+  hooks: {
+    beforeOperation: [
+      ({ req, operation }) => {
+        if (operation !== 'create' && operation !== 'update') return
+        const file = req.file
+        if (file?.size && file.size > MAX_FILE_BYTES) {
+          throw new APIError('File too large (max 10MB).', 400)
+        }
+      },
+    ],
   },
   fields: [
     {
@@ -44,6 +58,8 @@ export const Media: CollectionConfig = {
   upload: {
     // Upload to the public/media directory in Next.js making them publicly accessible even outside of Payload
     staticDir: path.resolve(dirname, '../../public/media'),
+    // Blocks SVG (XSS via CDN) and other non-image uploads besides PDF.
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif', 'application/pdf'],
     adminThumbnail: 'thumbnail',
     focalPoint: true,
     imageSizes: [

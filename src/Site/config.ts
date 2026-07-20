@@ -1,5 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
+import { adminOrEditor } from '@/access/roles'
+
 import { revalidateSite } from './hooks/revalidateSite'
 
 export const Site: GlobalConfig = {
@@ -7,6 +9,7 @@ export const Site: GlobalConfig = {
   label: 'Site',
   access: {
     read: () => true,
+    update: adminOrEditor,
   },
   fields: [
     {

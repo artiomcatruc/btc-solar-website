@@ -1,8 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '../../access/authenticated'
+import { adminOrEditor } from '../../access/roles'
 import { anyone } from '../../access/anyone'
-import { decrementStock } from './decrementStock'
+import { reserveStock } from './decrementStock'
 import { prepareOrder } from './prepareOrder'
 
 export const Orders: CollectionConfig<'orders'> = {
@@ -13,9 +13,9 @@ export const Orders: CollectionConfig<'orders'> = {
   },
   access: {
     create: anyone,
-    read: authenticated,
-    update: authenticated,
-    delete: authenticated,
+    read: adminOrEditor,
+    update: adminOrEditor,
+    delete: adminOrEditor,
   },
   defaultSort: '-createdAt',
   admin: {
@@ -26,7 +26,8 @@ export const Orders: CollectionConfig<'orders'> = {
   },
   hooks: {
     beforeValidate: [prepareOrder],
-    afterChange: [decrementStock],
+    // Reserve stock before insert so a failed create rolls back the decrement.
+    beforeChange: [reserveStock],
   },
   fields: [
     {
@@ -70,6 +71,7 @@ export const Orders: CollectionConfig<'orders'> = {
       name: 'address',
       type: 'textarea',
       required: true,
+      maxLength: 500,
       admin: {
         description: 'Delivery / contact address.',
       },
@@ -77,6 +79,7 @@ export const Orders: CollectionConfig<'orders'> = {
     {
       name: 'note',
       type: 'textarea',
+      maxLength: 1000,
       admin: {
         description: 'Optional message from the customer.',
       },

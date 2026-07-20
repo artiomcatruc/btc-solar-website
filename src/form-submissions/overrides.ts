@@ -1,5 +1,6 @@
 import type { Field } from 'payload'
 
+import { adminOrEditor } from '@/access/roles'
 import { populateSubmissionSummary } from './populateSummary'
 
 const readOnlySummaryAdmin = {
@@ -20,8 +21,8 @@ export const formSubmissionOverrides = {
     description: 'Contact form requests. Mark as Reviewed after you handle them.',
   },
   access: {
-    // Default plugin locks updates; allow admins to toggle status.
-    update: ({ req: { user } }: { req: { user: unknown } }) => Boolean(user),
+    update: adminOrEditor,
+    read: adminOrEditor,
   },
   hooks: {
     beforeChange: [populateSubmissionSummary],

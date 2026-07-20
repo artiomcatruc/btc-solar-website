@@ -9,7 +9,7 @@ import {
 } from '@payloadcms/plugin-seo/fields'
 
 import { anyone } from '../../access/anyone'
-import { authenticated } from '../../access/authenticated'
+import { adminOrEditor } from '../../access/roles'
 import { revalidateProduct, revalidateProductDelete } from './hooks/revalidateProduct'
 
 export const Products: CollectionConfig<'products'> = {
@@ -19,10 +19,10 @@ export const Products: CollectionConfig<'products'> = {
     plural: 'Products',
   },
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: adminOrEditor,
+    delete: adminOrEditor,
     read: anyone,
-    update: authenticated,
+    update: adminOrEditor,
   },
   admin: {
     useAsTitle: 'title',

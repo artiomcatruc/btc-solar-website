@@ -28,8 +28,11 @@ import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const serverURL = getServerSideURL()
 
 export default buildConfig({
+  serverURL,
+  csrf: [serverURL].filter(Boolean),
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
@@ -94,7 +97,7 @@ export default buildConfig({
     GalleryItems,
     Users,
   ],
-  cors: [getServerSideURL()].filter(Boolean),
+  cors: [serverURL].filter(Boolean),
   globals: [Site, HomeStats, Header, Footer],
   plugins: [
     ...plugins,
@@ -135,15 +138,14 @@ export default buildConfig({
   jobs: {
     access: {
       run: ({ req }: { req: PayloadRequest }): boolean => {
-        // Allow logged in users to execute this endpoint (default)
-        if (req.user) return true
+        const roles = req.user?.roles
+        if (Array.isArray(roles) && roles.some((role) => role === 'admin' || role === 'editor')) {
+          return true
+        }
 
         const secret = process.env.CRON_SECRET
         if (!secret) return false
 
-        // If there is no logged in user, then check
-        // for the Vercel Cron secret to be present as an
-        // Authorization header:
         const authHeader = req.headers.get('authorization')
         return authHeader === `Bearer ${secret}`
       },

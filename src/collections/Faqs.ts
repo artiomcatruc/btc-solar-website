@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
+import { adminOrEditor } from '../access/roles'
 
 export const FAQ_SCOPES = ['any', 'home', 'about', 'gallery', 'contact'] as const
 
@@ -12,10 +12,10 @@ export const Faqs: CollectionConfig<'faqs'> = {
     plural: 'FAQs',
   },
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: adminOrEditor,
+    delete: adminOrEditor,
     read: anyone,
-    update: authenticated,
+    update: adminOrEditor,
   },
   admin: {
     defaultColumns: ['question', 'pageScope', 'sort'],

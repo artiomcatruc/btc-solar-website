@@ -1414,6 +1414,10 @@ export interface Order {
 export interface User {
   id: number;
   name?: string | null;
+  /**
+   * Admins manage users and seed. Editors manage content.
+   */
+  roles: ('admin' | 'editor')[];
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -2411,6 +2415,7 @@ export interface GalleryItemsSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

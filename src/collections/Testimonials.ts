@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
+import { adminOrEditor } from '../access/roles'
 
 export const Testimonials: CollectionConfig<'testimonials'> = {
   slug: 'testimonials',
@@ -10,10 +10,10 @@ export const Testimonials: CollectionConfig<'testimonials'> = {
     plural: 'Testimonials',
   },
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: adminOrEditor,
+    delete: adminOrEditor,
     read: anyone,
-    update: authenticated,
+    update: adminOrEditor,
   },
   admin: {
     defaultColumns: ['name', '_order', 'updatedAt'],

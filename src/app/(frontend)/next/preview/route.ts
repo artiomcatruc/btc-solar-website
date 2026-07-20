@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { NextRequest } from 'next/server'
 
 import configPromise from '@payload-config'
+import { isSafePreviewPath } from '@/utilities/isSafePreviewPath'
 
 export type PreviewSearchParams = {
   path: string
@@ -28,8 +29,8 @@ export async function GET(req: NextRequest): Promise<Response> {
     return new Response('Insufficient search params', { status: 404 })
   }
 
-  if (!path.startsWith('/')) {
-    return new Response('This endpoint can only be used for relative previews', { status: 500 })
+  if (!isSafePreviewPath(path)) {
+    return new Response('This endpoint can only be used for relative previews', { status: 400 })
   }
 
   let user

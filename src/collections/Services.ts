@@ -3,7 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { BTC_ICON_SELECT_OPTIONS } from '@/components/BtcIcon'
 
 import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
+import { adminOrEditor } from '../access/roles'
 
 export const Services: CollectionConfig<'services'> = {
   slug: 'services',
@@ -12,10 +12,10 @@ export const Services: CollectionConfig<'services'> = {
     plural: 'Services',
   },
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: adminOrEditor,
+    delete: adminOrEditor,
     read: anyone,
-    update: authenticated,
+    update: adminOrEditor,
   },
   admin: {
     defaultColumns: ['title', 'icon', 'sort', 'updatedAt'],

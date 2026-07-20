@@ -1,5 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
+import { adminOrEditor } from '@/access/roles'
+
 import { revalidateHomeStats } from './hooks/revalidateHomeStats'
 
 export const HomeStats: GlobalConfig = {
@@ -7,6 +9,7 @@ export const HomeStats: GlobalConfig = {
   label: 'Home Statistics',
   access: {
     read: () => true,
+    update: adminOrEditor,
   },
   fields: [
     {
