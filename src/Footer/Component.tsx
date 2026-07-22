@@ -139,7 +139,20 @@ const FooterInner: React.FC<{
         </div>
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-graphite-800 pt-8 md:flex-row">
-          <p className="text-sm text-graphite-500">{copyright}</p>
+          <div className="flex flex-col items-center gap-1 text-sm text-graphite-500 md:items-start">
+            <p>{copyright}</p>
+            <p>
+              Design by{' '}
+              <a
+                className="text-graphite-400 transition-colors hover:text-solar-400"
+                href="https://unrealware.com/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                UnrealWare
+              </a>
+            </p>
+          </div>
           {footer?.showSocialFromSite !== false && site?.socialLinks?.length ? (
             <div className="flex items-center gap-4">
               {site.socialLinks.map(({ label, url }) =>
