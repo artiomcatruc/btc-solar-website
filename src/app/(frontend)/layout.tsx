@@ -11,8 +11,8 @@ import { getRequestLocale } from '@/utilities/getRequestLocale'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
-import { SITE_BRAND } from '@/utilities/seo'
 import { getServerSideURL } from '@/utilities/getURL'
+import { SITE_BRAND } from '@/utilities/seo'
 import './globals.css'
 
 const inter = Inter({
@@ -30,8 +30,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html className={cn(inter.variable, GeistMono.variable, 'scroll-smooth')} lang={locale}>
       <head>
-        <link href="/favicon.ico" rel="icon" sizes="32x32" />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <link href="/favicon.jpg" rel="icon" sizes="32x32" />
+        <link href="/favicon.jpg" rel="icon" type="image/jpg" />
       </head>
       <body className="font-sans antialiased">
         <Providers>
