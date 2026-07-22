@@ -16,7 +16,7 @@ import {
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
 
-  let url = serverUrl + '/website-template-OG.webp'
+  let url = serverUrl + '/favicon.jpg'
 
   if (image && typeof image === 'object' && 'url' in image) {
     const ogUrl = image.sizes?.og?.url
@@ -40,7 +40,11 @@ export const generateMeta = async (args: {
 
   const metaImage =
     doc && 'meta' in doc && doc.meta && typeof doc.meta === 'object'
-      ? (doc.meta as { image?: Media | number | null; title?: string | null; description?: string | null })
+      ? (doc.meta as {
+          image?: Media | number | null
+          title?: string | null
+          description?: string | null
+        })
       : null
 
   const ogImage = getImageURL(

@@ -8,7 +8,7 @@ const defaultOpenGraph: Metadata['openGraph'] = {
   description: SITE_DEFAULT_DESCRIPTION,
   images: [
     {
-      url: `${getServerSideURL()}/website-template-OG.webp`,
+      url: `${getServerSideURL()}/favicon.jpg`,
     },
   ],
   siteName: SITE_BRAND,
